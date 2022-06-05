@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "commonjs",
+    "outDir": "./lib"
+  },
+
+  "include": ["./src"],
+  "exclude": ["test"],
+  "ts-node": {
+    "files": true
+  }
+}

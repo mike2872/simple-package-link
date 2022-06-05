@@ -1,0 +1,58 @@
+{
+  "name": "simple-package-link",
+  "description": "",
+  "version": "0.1.0",
+  "homepage": "",
+  "private": false,
+  "main": "src",
+  "keywords": [],
+  "author": {
+    "name": "Mike Jensen",
+    "email": "jensen.mike57@gmail.com"
+  },
+  "contributors": [],
+  "bugs": {},
+  "directories": {
+    "lib": "src",
+    "test": "test/"
+  },
+  "engines": {
+    "node": "16.x",
+    "pnpm": ">=7"
+  },
+  "scripts": {
+    "test": "pnpm run lint && pnpm run compile && pnpm run jest",
+    "lint": "eslint src/. test/. --config .eslintrc.json --ext .ts --fix",
+    "dev": "ts-node-dev --no-notify src/",
+    "start": "pnpm run compile && node lib/",
+    "jest": "jest --forceExit",
+    "compile": "shx rm -rf lib/ && tsc",
+    "prepare": "husky install"
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ],
+    "ignore": []
+  },
+  "types": "lib/",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.39",
+    "@typescript-eslint/eslint-plugin": "^5.27.0",
+    "@typescript-eslint/parser": "^5.27.0",
+    "eslint": "^8.17.0",
+    "eslint-config-prettier": "^8.5.0",
+    "husky": "^8.0.0",
+    "jest": "^28.1.0",
+    "lint-staged": "^13.0.0",
+    "prettier": "^2.6.2",
+    "shx": "^0.3.4",
+    "ts-jest": "^28.0.4",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.7.3"
+  },
+  "resolutions": {}
+}
