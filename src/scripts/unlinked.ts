@@ -5,7 +5,7 @@ import getConfig from '../helpers/get-config';
 import getCWD from '../helpers/get-cwd';
 import { logStep, logSubStep } from '../helpers/log';
 
-export default async function unlinked() {
+async function unlinked() {
   const { packages, commands } = await getConfig();
 
   logStep({

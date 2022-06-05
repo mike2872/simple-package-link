@@ -6,7 +6,7 @@ import getCWD from '../helpers/get-cwd';
 import concurrently from 'concurrently';
 import { logStep, logSubStep } from '../helpers/log';
 
-export default async function linked() {
+async function linked() {
   const { packages, commands } = await getConfig();
 
   const linkPackages = async () => {
