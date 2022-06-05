@@ -17,7 +17,7 @@ export default async function linkPackage(pkg: LinkedPackage) {
     unpacked: `${tmpDir}/package`,
   };
 
-  // Run before hook
+  // Run prepack hook
   if (pkg.hooks?.prepack) {
     childProcess(pkg.hooks.prepack.cmd, {
       args: pkg.hooks.prepack.args,
