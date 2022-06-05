@@ -52,7 +52,7 @@ async function linked() {
     logStep({
       n: 3,
       n_total: 3,
-      message: 'Running command',
+      message: 'Running dev command',
     });
 
     return `${commands.dev.cmd} ${commands.dev.args?.join(' ')}`.trim();
