@@ -34,10 +34,10 @@ interface Config {
 
 export default async function getConfig() {
   const cwd = getCWD();
-  const config = (await import(`${cwd}/spl-config.js`)) as Config;
+  const config = (await import(`${cwd}/spl.config.js`)) as Config;
 
   if (!config) {
-    throw new Error(`Couldn't find a spl-config.js in root`);
+    throw new Error(`Couldn't find a spl.config.js in root`);
   }
 
   return {
