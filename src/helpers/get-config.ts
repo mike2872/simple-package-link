@@ -25,7 +25,6 @@ export interface LinkedPackage {
 
 interface Config {
   debug?: boolean;
-  npmClient: 'yarn';
   commands: {
     dev: Command;
     reinstall: Command;
