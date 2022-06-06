@@ -18,9 +18,9 @@ export default async function linkPackage(pkg: LinkedPackage) {
   };
 
   // Run prepack hook
-  if (pkg.options?.prepack) {
-    childProcess(pkg.options.prepack.cmd, {
-      args: pkg.options.prepack.args,
+  if (pkg.prepack) {
+    childProcess(pkg.prepack.cmd, {
+      args: pkg.prepack.args,
       cwd: paths.src,
       type: childProcessType,
     });

@@ -32,10 +32,8 @@ interface LinkedPackage {
      * Only absolute paths are supported */
     oncopy?: (filename: string, src: string) => string;
   };
-  options?: {
-    /** Will be executed before running 'yarn pack' during initial linking */
-    prepack?: Command;
-  };
+  /** Will be executed before running 'yarn pack' during initial linking */
+  prepack?: Command;
 }
 
 interface Config {
