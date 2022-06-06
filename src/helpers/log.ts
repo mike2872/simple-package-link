@@ -19,7 +19,7 @@ export const logSubStep = (step: Step) => {
   const progress = `\x1b[34m[${step.n}/${step.n_total}]\x1b[0m`;
 
   console.log(
-    step.pkgId ? new Array(`[${step.pkgId}]`.length + 1).join(' ') : `   `,
+    step.pkgId ? new Array(`[${step.pkgId}]`.length + 7).join(' ') : `     `,
     progress,
     msg,
   );
