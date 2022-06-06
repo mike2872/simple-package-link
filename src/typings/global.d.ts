@@ -30,7 +30,16 @@ interface LinkedPackage {
     /** Allows overriding the destination of an updated file.
      * E.g. if file is updated in src/* but needs to be placed in dist/src on target
      * Only absolute paths are supported */
-    oncopy?: (filename: string, src: string) => string;
+    oncopy?: (params: {
+      filename: string;
+      src: string;
+      target: string;
+      /** Transpile file using tsc before copying
+       * Use tsconfig.json from src.root.
+       * Returns the target destination.
+       */
+      tsc?: (target: string) => string;
+    }) => string;
   };
   /** Will be executed before running 'yarn pack' during initial linking */
   prepack?: Command;
@@ -47,4 +56,5 @@ interface Config {
   packages: LinkedPackage[];
   /** Added during runtime */
   reinstallCommand: Command;
+  tmpDir: string;
 }

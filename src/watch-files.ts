@@ -2,7 +2,7 @@ import nodemon from 'nodemon';
 import uniq from 'lodash.uniq';
 import debounce from 'lodash.debounce';
 import linkFiles from './link-files';
-import getConfig from './helpers/get-config';
+import { getConfig } from './helpers/get-config';
 
 export default async function watchFiles() {
   const pkg = (await getConfig()).packages.find(

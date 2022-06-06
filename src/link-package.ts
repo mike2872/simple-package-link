@@ -1,20 +1,16 @@
-import os from 'os';
-import * as path from 'path';
 import childProcess from './helpers/child-process';
-import getConfig from './helpers/get-config';
+import { getConfig } from './helpers/get-config';
 import updateVersionNumber from './helpers/update-version-number';
-import { mkdtempSync } from 'fs';
 
 export default async function linkPackage(pkg: LinkedPackage) {
   const config = await getConfig();
   const childProcessType = config.debug ? 'inherit' : 'silent';
-  const tmpDir = mkdtempSync(path.join(os.tmpdir(), 'spl-'));
 
   const paths = {
     src: pkg.src.root,
     target: pkg.target.root,
-    packed: `${tmpDir}/${pkg.id}.tgz`,
-    unpacked: `${tmpDir}/package`,
+    packed: `${config.tmpDir}/${pkg.id}.tgz`,
+    unpacked: `${config.tmpDir}/package`,
   };
 
   // Run prepack hook
@@ -35,7 +31,7 @@ export default async function linkPackage(pkg: LinkedPackage) {
 
   // Unpack src package
   childProcess('tar', {
-    args: ['-xzf', paths.packed, '--directory', tmpDir],
+    args: ['-xzf', paths.packed, '--directory', config.tmpDir],
     type: childProcessType,
   });
 

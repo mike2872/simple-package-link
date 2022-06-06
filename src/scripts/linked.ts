@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import linkPackage from '../link-package';
-import getConfig from '../helpers/get-config';
+import { getConfig } from '../helpers/get-config';
 import getCWD from '../helpers/get-cwd';
 import concurrently from 'concurrently';
 import { logStep, logSubStep } from '../helpers/log';

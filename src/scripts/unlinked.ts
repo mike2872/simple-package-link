@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import childProcess from '../helpers/child-process';
-import getConfig from '../helpers/get-config';
+import { getConfig } from '../helpers/get-config';
 import getCWD from '../helpers/get-cwd';
 import { logStep, logSubStep } from '../helpers/log';
 

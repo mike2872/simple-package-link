@@ -1,5 +1,8 @@
 import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 import getCWD from './get-cwd';
+import { mkdtempSync } from 'fs';
 
 const supportedNpmClients = ['yarn'];
 const reinstallCommands = {
@@ -9,11 +12,12 @@ const reinstallCommands = {
   },
 };
 
-export default async function getConfig() {
+export async function getConfig() {
+  const tmpDir = mkdtempSync(path.join(os.tmpdir(), 'spl-'));
   const cwd = getCWD();
   const config = (await import(`${cwd}/spl.config.js`)) as Omit<
     Config,
-    'reinstallCommand'
+    'reinstallCommand' | 'tmpDir'
   >;
 
   if (!config) {
@@ -26,6 +30,7 @@ export default async function getConfig() {
 
   return {
     ...config,
+    tmpDir,
     reinstallCommand: reinstallCommands[config.npmClient],
     packages: config.packages.map(pkg => {
       try {
@@ -49,4 +54,12 @@ export default async function getConfig() {
       };
     }),
   } as Config;
+}
+
+export function getTsConfig() {
+  try {
+    return JSON.parse(fs.readFileSync(`${getCWD()}/tsconfig.json`).toString());
+  } catch (error) {
+    throw new Error(`There was a problem fetching tsconfig.json in src.root`);
+  }
 }
