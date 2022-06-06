@@ -28,7 +28,9 @@ export default async function getConfig() {
     ...config,
     reinstallCommand: reinstallCommands[config.npmClient],
     packages: config.packages.map(pkg => {
-      if (!fs.existsSync(fs.realpathSync(`${pkg.target.root}/package.json`))) {
+      try {
+        fs.existsSync(fs.realpathSync(`${pkg.target.root}/package.json`));
+      } catch (error) {
         throw new Error(
           `A package.json file couldn't be found in the root specified for ${pkg.id}`,
         );
