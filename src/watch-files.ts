@@ -1,5 +1,6 @@
 import nodemon from 'nodemon';
 import uniq from 'lodash.uniq';
+import debounce from 'lodash.debounce';
 import linkFiles from './link-files';
 
 export default function watchFiles() {
@@ -11,15 +12,31 @@ export default function watchFiles() {
     throw new Error(`An unknown error occured while trying to the watcher`);
   }
 
+  let queue = [] as string[];
+
+  const debouncedLinking = debounce(
+    async updatedFiles => {
+      await linkFiles(uniq(updatedFiles));
+      queue = [];
+    },
+    500,
+    {
+      trailing: true,
+      leading: false,
+    },
+  );
+
   nodemon({
     cwd: pkg.src.root,
     script: `/dev/null`,
     ext: '*',
     watch: pkg.src.include,
     ignore: pkg.src.exclude,
-    delay: 0.2,
   }).on('restart', updatedFiles => {
-    linkFiles(uniq(updatedFiles));
+    updatedFiles?.forEach(updatedFile => {
+      queue.push(updatedFile);
+      debouncedLinking(queue);
+    });
   });
 
   nodemon.on('quit', () => {
