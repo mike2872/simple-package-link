@@ -12,7 +12,7 @@ function incrementVersion() {
     throw new Error('Missing or unsupported stage');
   }
 
-  updateVersionNumber(`${cwd}/package.json`, version => {
+  const newVersion = updateVersionNumber(`${cwd}/package.json`, version => {
     const [first, middle, last] = version.split('.').map(Number);
 
     switch (stage) {
@@ -27,6 +27,7 @@ function incrementVersion() {
 
   childProcess('prettier', { args: ['--write', 'package.json'], cwd });
   childProcess('git', { args: ['add', 'package.json'], cwd });
+  childProcess('git', { args: ['commit', '-m', `publish ${newVersion}`], cwd });
   childProcess('git', { args: ['push'], cwd });
 }
 
