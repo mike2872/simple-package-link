@@ -16,7 +16,7 @@ export default function watchFiles() {
     script: `/dev/null`,
     ext: '*',
     watch: pkg.src.include,
-    ignore: pkg.src.ignore,
+    ignore: pkg.src.exclude,
     delay: 0.2,
   }).on('restart', updatedFiles => {
     linkFiles(uniq(updatedFiles));

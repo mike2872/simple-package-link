@@ -22,7 +22,7 @@ interface LinkedPackage {
     /**
      * Ignore specific files or directories. One entry per ignored value. Wildcards are allowed.
      */
-    ignore?: string[];
+    exclude?: string[];
   };
   target: {
     /** Only absolute paths are supported */
