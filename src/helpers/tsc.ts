@@ -2,8 +2,8 @@ import ts from 'typescript';
 import * as fs from 'fs';
 import { getTsConfig } from './get-config';
 
-export default function tsc(pkgRoot: string, src: string, target: string) {
-  const tsconfig = getTsConfig(pkgRoot);
+export default function tsc(targetRoot: string, src: string, target: string) {
+  const tsconfig = getTsConfig(targetRoot);
   const code = fs.readFileSync(src).toString();
 
   const result = ts.transpileModule(code, {

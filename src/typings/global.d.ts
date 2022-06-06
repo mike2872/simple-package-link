@@ -34,15 +34,15 @@ interface LinkedPackage {
       file: string;
       src: string;
       targetRoot: string;
-      /** Transpile file using tsc before copying
-       * Use tsconfig.json from src.root.
-       * Returns the target destination.
-       */
-      tsc?: (target: string) => string;
     }) => string;
   };
   /** Will be executed before running 'yarn pack' during initial linking */
   prepack?: Command;
+  /** Transpile file using tsc before copying
+   * Use tsconfig.json from src.root.
+   * Returns the target destination.
+   */
+  tsc?: boolean;
 }
 
 interface Config {

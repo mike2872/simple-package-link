@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import { logStep, logSubStep } from './helpers/log';
 import tsc from './helpers/tsc';
 import updateVersionNumber from './helpers/update-version-number';
@@ -11,15 +12,22 @@ export default async function linkFiles(
   logStep({ pkgId: pkg.id, n: 1, n_total: 3, message: `Linking files...` });
 
   changedFiles.map((path_src, index) => {
-    const file = path_src.split(pkg?.src.root ?? '')?.[1];
+    const _file = path_src.split(pkg?.src.root ?? '')?.[1];
+    const file = pkg.tsc
+      ? `${path.parse(_file).name}.js`
+      : path.parse(_file).base;
+
     const path_target = fs.realpathSync(
       pkg?.target?.oncopy?.({
         file,
         src: path_src,
         targetRoot: pkg?.target.root,
-        tsc: (target: string) => tsc(pkg.src.root, path_src, target),
       }) ?? `${pkg?.target.root}/${file}`,
     );
+
+    if (pkg.tsc) {
+      tsc(pkg.target.root, path_src, path_target);
+    }
 
     if (!pkg || !fs.existsSync(path_target)) {
       throw new Error(
@@ -27,8 +35,10 @@ export default async function linkFiles(
       );
     }
 
-    fs.unlinkSync(path_target);
-    fs.copyFileSync(path_src, path_target);
+    if (!pkg.tsc) {
+      fs.unlinkSync(path_target);
+      fs.copyFileSync(path_src, path_target);
+    }
 
     logSubStep({
       pkgId: pkg.id,
