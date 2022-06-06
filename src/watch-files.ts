@@ -15,7 +15,7 @@ export default function watchFiles() {
   let queue = [] as string[];
 
   const debouncedLinking = debounce(
-    async updatedFiles => {
+    async (pkg, updatedFiles) => {
       await linkFiles(pkg, uniq(updatedFiles));
       queue = [];
     },
@@ -35,7 +35,7 @@ export default function watchFiles() {
   }).on('restart', updatedFiles => {
     updatedFiles?.forEach(updatedFile => {
       queue.push(updatedFile);
-      debouncedLinking(queue);
+      debouncedLinking(pkg, queue);
     });
   });
 
