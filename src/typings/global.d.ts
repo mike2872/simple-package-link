@@ -31,7 +31,9 @@ interface LinkedPackage {
      * E.g. if file is updated in src/* but needs to be placed in dist/src on target
      * Only absolute paths are supported */
     oncopy?: (params: {
-      file: string;
+      name: string;
+      ext: string;
+      relativePath: string;
       src: string;
       targetRoot: string;
     }) => string;

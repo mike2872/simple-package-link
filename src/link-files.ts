@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { getTsConfig } from './helpers/get-config';
 import { logStep, logSubStep } from './helpers/log';
 import tsc from './helpers/tsc';
 import updateVersionNumber from './helpers/update-version-number';
@@ -8,30 +9,45 @@ export default async function linkFiles(
   pkg: LinkedPackage,
   changedFiles: string[],
 ) {
+  const tsconfig = getTsConfig(`${pkg.src.root}/tsconfig.json`);
+
   // Replace target files with changed src files
   logStep({ pkgId: pkg.id, n: 1, n_total: 3, message: `Linking files...` });
 
   changedFiles.map((path_src, index) => {
-    const _file = path_src.split(pkg?.src.root ?? '')?.[1];
-    const file = pkg.tsc
-      ? `${path.parse(_file).name}.js`
-      : path.parse(_file).base;
+    const {
+      dir,
+      name,
+      base,
+      ext: _ext,
+    } = path.parse(path_src.split(pkg?.src.root ?? '')?.[1]);
 
-    const path_target = fs.realpathSync(
+    const ext = pkg.tsc
+      ? tsconfig?.compilerOptions?.jsx === 'preserve'
+        ? '.jsx'
+        : '.js'
+      : _ext;
+
+    const file = pkg.tsc ? `${dir}/${name}${ext}` : `${dir}/${base}`;
+
+    let path_target =
       pkg?.target?.oncopy?.({
-        file,
+        name,
+        ext,
+        relativePath: file,
         src: path_src,
         targetRoot: pkg?.target.root,
-      }) ?? `${pkg?.target.root}/${file}`,
-    );
+      }) ?? `${pkg?.target.root}${file}`;
 
     if (pkg.tsc) {
-      tsc(pkg.target.root, path_src, path_target);
+      tsc(`${pkg.src.root}/tsconfig.json`, path_src, path_target);
     }
 
-    if (!pkg || !fs.existsSync(path_target)) {
+    path_target = fs.realpathSync(path_target);
+
+    if (!fs.existsSync(path_target)) {
       throw new Error(
-        `Couldn't find the corresponding file in your project (${path_src})`,
+        `Couldn't find the corresponding file in your project: ${path_target}`,
       );
     }
 
