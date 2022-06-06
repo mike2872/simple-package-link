@@ -11,15 +11,14 @@ export default async function linkFiles(
   logStep({ pkgId: pkg.id, n: 1, n_total: 3, message: `Linking files...` });
 
   changedFiles.map((path_src, index) => {
-    const filename = path_src.split(pkg?.src.root ?? '')?.[1];
-    const default_path_target = `${pkg?.target.root}/${filename}`;
+    const file = path_src.split(pkg?.src.root ?? '')?.[1];
     const path_target = fs.realpathSync(
       pkg?.target?.oncopy?.({
-        filename,
+        file,
         src: path_src,
-        target: default_path_target,
-        tsc: (target: string) => tsc(path_src, target),
-      }) ?? default_path_target,
+        targetRoot: pkg?.target.root,
+        tsc: (target: string) => tsc(pkg.src.root, path_src, target),
+      }) ?? `${pkg?.target.root}/${file}`,
     );
 
     if (!pkg || !fs.existsSync(path_target)) {
@@ -35,7 +34,7 @@ export default async function linkFiles(
       pkgId: pkg.id,
       n: index + 1,
       n_total: changedFiles.length,
-      message: `Linked ${filename}`,
+      message: `Linked ${file}`,
     });
   });
 

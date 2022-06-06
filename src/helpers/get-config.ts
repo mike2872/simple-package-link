@@ -56,9 +56,9 @@ export async function getConfig() {
   } as Config;
 }
 
-export function getTsConfig() {
+export function getTsConfig(root: string) {
   try {
-    return JSON.parse(fs.readFileSync(`${getCWD()}/tsconfig.json`).toString());
+    return JSON.parse(fs.readFileSync(`${root}/tsconfig.json`).toString());
   } catch (error) {
     throw new Error(`There was a problem fetching tsconfig.json in src.root`);
   }

@@ -31,9 +31,9 @@ interface LinkedPackage {
      * E.g. if file is updated in src/* but needs to be placed in dist/src on target
      * Only absolute paths are supported */
     oncopy?: (params: {
-      filename: string;
+      file: string;
       src: string;
-      target: string;
+      targetRoot: string;
       /** Transpile file using tsc before copying
        * Use tsconfig.json from src.root.
        * Returns the target destination.
