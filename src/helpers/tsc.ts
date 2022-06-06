@@ -10,9 +10,7 @@ export default function tsc(pkgRoot: string, src: string, target: string) {
     ...tsconfig,
   });
 
-  fs.writeFile(target, result.outputText, function (err) {
-    if (err) throw err;
-  });
+  fs.writeFileSync(target, result.outputText);
 
   return target;
 }
