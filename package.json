@@ -33,7 +33,12 @@
     "compile": "shx rm -rf lib/ && tsc",
     "prepare": "husky install",
     "prepublish": "pnpm compile",
-    "publish:latest": "pnpm publish --tag latest --access public --publish-branch main --no-git-checks"
+    "increment-version": "ts-node ./scripts/increment-version.ts",
+    "publish:latest": "pnpm publish --tag latest --access public --publish-branch main",
+    "publish:dry-run": "pnpm publish:latest --dry-run",
+    "publish:bug-fix": "pnpm publish:dry-run && pnpm increment-version patch && pnpm publish:latest",
+    "publish:feature": "pnpm publish:dry-run && pnpm increment-version minor && pnpm publish:latest",
+    "publish:breaking": "pnpm publish:dry-run && pnpm increment-version major && pnpm publish:latest"
   },
   "standard": {
     "env": [
