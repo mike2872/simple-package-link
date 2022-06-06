@@ -42,9 +42,7 @@ async function linked() {
         message: `Starting listener for ${pkg.id}`,
       });
 
-      return `node ${__dirname}/../watch-files.js --json ${encodeURIComponent(
-        JSON.stringify(pkg),
-      )}`;
+      return `node ${__dirname}/../watch-files.js ${pkg.id}`;
     });
   };
 
