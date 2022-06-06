@@ -26,6 +26,8 @@ function incrementVersion() {
   });
 
   childProcess('prettier', { args: ['--write', 'package.json'], cwd });
+  childProcess('git', { args: ['add', 'package.json'], cwd });
+  childProcess('git', { args: ['push'], cwd });
 }
 
 incrementVersion();
