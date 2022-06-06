@@ -46,7 +46,7 @@ export default async function linkFiles(changedFiles: string[]) {
   files.forEach(({ pkg }, index, array) => {
     setTimeout(() => {
       updateVersionNumber(
-        `${pkg.target}/package.json`,
+        `${pkg.target.root}/package.json`,
         version => `${version.split('+')[0]}+${new Date().getTime()}`,
       );
 
