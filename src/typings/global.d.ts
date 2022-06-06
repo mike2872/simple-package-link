@@ -12,25 +12,40 @@ type Command = {
 
 interface LinkedPackage {
   id: string;
-  /** Only absolute paths are supported */
-  src: string;
-  /** Only absolute paths are supported */
-  target: string;
-  ignore?: string[];
-  hooks?: {
-    /** Will be executed before running 'yarn pack' */
-    prepack?: Command;
-    /** Allows overriding the target of a file when relinking.
-     * Only absolute paths are supported
+  src: {
+    /** Only absolute paths are supported. Must include a package.json file */
+    root: string;
+    /**
+     * Watch directory or file. One entry per watched value. Wildcards are allowed.
      */
-    relinkfile?: (filename: string, src: string, target: string) => string;
+    include?: string[];
+    /**
+     * Ignore specific files or directories. One entry per ignored value. Wildcards are allowed.
+     */
+    ignore?: string[];
+  };
+  target: {
+    /** Only absolute paths are supported */
+    root: string;
+    /** Allows overriding the destination of an updated file.
+     * E.g. if file is updated in src/* but needs to be placed in dist/src on target
+     * Only absolute paths are supported */
+    oncopy?: (filename: string, src: string) => string;
+  };
+  options?: {
+    /** Will be executed before running 'yarn pack' during initial linking */
+    prepack?: Command;
   };
 }
 
 interface Config {
+  /** Increases the log level */
   debug?: boolean;
+  /** Supported: 'yarn' */
   npmClient: 'yarn';
+  /** Command to run after linking / unlinked */
   devCommand: Command;
+  /** Packages to watch */
   packages: LinkedPackage[];
   /** Added during runtime */
   reinstallCommand: Command;

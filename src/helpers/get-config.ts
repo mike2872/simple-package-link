@@ -27,10 +27,24 @@ export default async function getConfig() {
   return {
     ...config,
     reinstallCommand: reinstallCommands[config.npmClient],
-    packages: config.packages.map(pkg => ({
-      ...pkg,
-      src: fs.realpathSync(pkg.src),
-      target: fs.realpathSync(pkg.target),
-    })),
+    packages: config.packages.map(pkg => {
+      if (!fs.existsSync(fs.realpathSync(`${pkg.target.root}/package.json`))) {
+        throw new Error(
+          `A package.json file couldn't be found in the root specified for ${pkg.id}`,
+        );
+      }
+
+      return {
+        ...pkg,
+        src: {
+          ...pkg.src,
+          root: fs.realpathSync(pkg.src.root),
+        },
+        target: {
+          ...pkg.target,
+          root: fs.realpathSync(pkg.target.root),
+        },
+      };
+    }),
   } as Config;
 }

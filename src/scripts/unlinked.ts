@@ -22,7 +22,7 @@ async function unlinked() {
     });
 
     childProcess('rm', {
-      args: ['-rf', pkg.target],
+      args: ['-rf', pkg.target.root],
     });
   });
 

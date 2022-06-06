@@ -11,16 +11,16 @@ export default async function linkPackage(pkg: LinkedPackage) {
   const tmpDir = mkdtempSync(path.join(os.tmpdir(), 'spl-'));
 
   const paths = {
-    src: pkg.src,
-    target: pkg.target,
+    src: pkg.src.root,
+    target: pkg.target.root,
     packed: `${tmpDir}/${pkg.id}.tgz`,
     unpacked: `${tmpDir}/package`,
   };
 
   // Run prepack hook
-  if (pkg.hooks?.prepack) {
-    childProcess(pkg.hooks.prepack.cmd, {
-      args: pkg.hooks.prepack.args,
+  if (pkg.options?.prepack) {
+    childProcess(pkg.options.prepack.cmd, {
+      args: pkg.options.prepack.args,
       cwd: paths.src,
       type: childProcessType,
     });

@@ -7,11 +7,12 @@ export default async function linkFiles(changedFiles: string[]) {
   const config = await getConfig();
 
   const files = changedFiles.map(file => {
-    const pkg = config.packages.find(({ src }) => file.includes(src));
-    const filename = file.split(pkg?.src ?? '')?.[1];
-    const file_client =
-      pkg?.hooks?.relinkfile?.(filename, file, pkg.target) ??
-      `${pkg?.target}/${filename}`;
+    const pkg = config.packages.find(({ src }) => file.includes(src.root));
+    const filename = file.split(pkg?.src.root ?? '')?.[1];
+    const file_client = fs.realpathSync(
+      pkg?.target?.oncopy?.(filename, file) ??
+        `${pkg?.target.root}/${filename}`,
+    );
 
     if (!pkg || !fs.existsSync(file_client)) {
       throw new Error(
