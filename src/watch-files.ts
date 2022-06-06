@@ -1,7 +1,6 @@
 import nodemon from 'nodemon';
 import lodash from 'lodash';
 import linkFiles from './link-files';
-import { LinkedPackage } from './helpers/get-config';
 
 export default function watchFiles() {
   const pkg = JSON.parse(

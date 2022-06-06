@@ -1,7 +1,7 @@
 import os from 'os';
 import * as path from 'path';
 import childProcess from './helpers/child-process';
-import getConfig, { LinkedPackage } from './helpers/get-config';
+import getConfig from './helpers/get-config';
 import updateVersionNumber from './helpers/update-version-number';
 import { mkdtempSync } from 'fs';
 
