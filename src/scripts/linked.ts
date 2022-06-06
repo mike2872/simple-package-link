@@ -7,7 +7,7 @@ import concurrently from 'concurrently';
 import { logStep, logSubStep } from '../helpers/log';
 
 async function linked() {
-  const { packages, commands } = await getConfig();
+  const { packages, devCommand } = await getConfig();
 
   const linkPackages = async () => {
     logStep({
@@ -55,7 +55,7 @@ async function linked() {
       message: 'Running dev command',
     });
 
-    return `${commands.dev.cmd} ${commands.dev.args?.join(' ')}`.trim();
+    return `${devCommand.cmd} ${devCommand.args?.join(' ')}`.trim();
   };
 
   await linkPackages();

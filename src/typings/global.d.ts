@@ -29,9 +29,9 @@ interface LinkedPackage {
 
 interface Config {
   debug?: boolean;
-  commands: {
-    dev: Command;
-    reinstall: Command;
-  };
+  npmClient: 'yarn';
+  devCommand: Command;
   packages: LinkedPackage[];
+  /** Added during runtime */
+  reinstallCommand: Command;
 }

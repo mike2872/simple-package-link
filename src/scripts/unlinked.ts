@@ -6,7 +6,7 @@ import getCWD from '../helpers/get-cwd';
 import { logStep, logSubStep } from '../helpers/log';
 
 async function unlinked() {
-  const { packages, commands } = await getConfig();
+  const { packages, devCommand, reinstallCommand } = await getConfig();
 
   logStep({
     n: 1,
@@ -29,11 +29,11 @@ async function unlinked() {
   logStep({
     n: 2,
     n_total: 3,
-    message: 'Running reinstall command',
+    message: 'Reinstalling packages',
   });
 
-  childProcess(commands.reinstall.cmd, {
-    args: commands.reinstall.args,
+  childProcess(reinstallCommand.cmd, {
+    args: reinstallCommand.args,
     cwd: getCWD(),
   });
 
@@ -43,8 +43,8 @@ async function unlinked() {
     message: 'Running dev command',
   });
 
-  childProcess(commands.dev.cmd, {
-    args: commands.dev.args,
+  childProcess(devCommand.cmd, {
+    args: devCommand.args,
     cwd: getCWD(),
   });
 }
