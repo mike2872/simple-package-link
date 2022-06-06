@@ -14,8 +14,9 @@ export default function updateVersionNumber(
     }),
     newJson => {
       fs.writeFileSync(packageJsonPath, JSON.stringify(newJson));
+      return newJson.version;
     },
   );
 
-  updateVersionNumber(packageJsonPath);
+  return updateVersionNumber(packageJsonPath);
 }
