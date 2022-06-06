@@ -16,7 +16,7 @@ export default function watchFiles() {
 
   const debouncedLinking = debounce(
     async updatedFiles => {
-      await linkFiles(uniq(updatedFiles));
+      await linkFiles(pkg, uniq(updatedFiles));
       queue = [];
     },
     500,
