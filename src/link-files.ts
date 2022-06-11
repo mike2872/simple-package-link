@@ -30,7 +30,7 @@ export default async function linkFiles(
 
     const file = pkg.tsc ? `${dir}/${name}${ext}` : `${dir}/${base}`;
 
-    let path_target =
+    const path_target =
       pkg?.target?.oncopy?.({
         name,
         ext,
@@ -43,16 +43,11 @@ export default async function linkFiles(
       tsc(`${pkg.src.root}/tsconfig.json`, path_src, path_target);
     }
 
-    path_target = fs.realpathSync(path_target);
-
-    if (!fs.existsSync(path_target)) {
-      throw new Error(
-        `Couldn't find the corresponding file in your project: ${path_target}`,
-      );
-    }
-
     if (!pkg.tsc) {
-      fs.unlinkSync(path_target);
+      if (fs.existsSync(path_target)) {
+        fs.unlinkSync(path_target);
+      }
+
       fs.copyFileSync(path_src, path_target);
     }
 
