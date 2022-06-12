@@ -9,7 +9,7 @@ export default function listenKillSignal(
       console.error(err);
     }
 
-    logStep({ message: 'Terminating gracefully' });
+    logStep({ message: 'Terminating gracefully...' });
     await devProcess.terminate();
     process.exit(0);
   };

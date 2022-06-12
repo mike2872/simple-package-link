@@ -29,7 +29,7 @@ async function linked() {
   logStep({
     n: 1,
     n_total: 1,
-    message: 'Running cleanup',
+    message: 'Running cleanup...',
   });
 
   await cleanup();
@@ -37,7 +37,7 @@ async function linked() {
   logStep({
     n: 1,
     n_total: 3,
-    message: 'Linking packages',
+    message: 'Linking packages...',
   });
 
   for (let i = 0; i < packages.length; i++) {
@@ -61,7 +61,7 @@ async function linked() {
   logStep({
     n: 2,
     n_total: 3,
-    message: 'Starting listeners',
+    message: 'Starting listeners...',
   });
 
   for (let i = 0; i < packages.length; i++) {
@@ -79,7 +79,7 @@ async function linked() {
   logStep({
     n: 3,
     n_total: 3,
-    message: 'Running dev command',
+    message: 'Running dev command...',
   });
 
   await devProcess.resume();

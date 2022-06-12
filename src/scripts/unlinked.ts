@@ -31,7 +31,7 @@ async function unlinked() {
   logStep({
     n: 2,
     n_total: 3,
-    message: 'Running cleanup',
+    message: 'Running cleanup...',
   });
 
   await cleanup();
@@ -39,7 +39,7 @@ async function unlinked() {
   logStep({
     n: 3,
     n_total: 3,
-    message: 'Running dev command',
+    message: 'Running dev command...',
   });
 
   const devProcess = new DevProcess();

@@ -3,13 +3,12 @@ import * as path from 'path';
 import { mkdtempSync } from 'fs';
 import { childProcessSync } from './child-process';
 import { differenceWith, fromPairs, toPairs, isEqual } from 'lodash';
-import { logStep } from './log';
+import { logStep, logSubStep } from './log';
 import md5Hash from './md5-hash';
 import move from './move';
 import updateVersionNumber from './update-version-number';
 import { ChangedLockFileEvent } from '../watch-files';
 import deleteFolder from './delete-folder';
-import getCWD from './get-cwd';
 
 function updateDependency(
   pkgId: string,
@@ -17,9 +16,9 @@ function updateDependency(
   dependency: string,
   version: string,
 ) {
-  logStep({
+  logSubStep({
     pkgId,
-    message: `Installing ${dependency}@${version}...`,
+    message: `Installing ${dependency}@${version}`,
   });
 
   const tmpDir = mkdtempSync(
@@ -38,6 +37,7 @@ function updateDependency(
   childProcessSync('npm', {
     args: ['install', `${dependency}@${version}`],
     cwd: tmpDir,
+    type: 'silent',
   });
 
   move(`${tmpDir}/node_modules/${dependency}`, `${tmpDir}`);
@@ -53,6 +53,11 @@ export default function updateDependencies({
   newPkgJson,
   callbacks,
 }: ChangedLockFileEvent) {
+  logStep({
+    pkgId,
+    message: `Installing dependencies...`,
+  });
+
   const changes = Object.entries(
     fromPairs(
       differenceWith(

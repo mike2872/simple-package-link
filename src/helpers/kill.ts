@@ -14,7 +14,7 @@ export default function kill(
     logStep({
       message: `${
         type === 'SIGSTOP' ? 'Pausing' : type === 'SIGCONT' ? 'Resuming' : type
-      } process ${pid}`,
+      } process ${pid}...`,
     });
   }
 
