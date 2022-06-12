@@ -11,6 +11,8 @@ export default function syncDependencies(
   let prevPkgJson = getPkgJson();
 
   const sync = () => {
+    if (!pkg.experimental?.syncDependencyChanges?.enabled) return;
+
     const newPkgJson = getPkgJson();
     updateDependencies({
       pkgId: pkg.id,

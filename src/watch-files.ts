@@ -63,12 +63,12 @@ export default async function watchFiles(
 
   (['add', 'change', 'unlink'] as const).forEach(eventType => {
     watcher.on(eventType, async changedFile => {
-      const syncDependencyChanges = pkg.experimental?.syncDependencyChanges;
-      const dependenciesUpdated = syncDependencyChanges?.listenLockFiles.some(
-        lockfile => changedFile === lockfile,
-      );
+      const dependenciesUpdated =
+        pkg.experimental?.syncDependencyChanges?.listenLockFiles.some(
+          lockfile => changedFile === lockfile,
+        );
 
-      if ((syncDependencyChanges?.enabled, dependenciesUpdated)) {
+      if (dependenciesUpdated) {
         syncDeps();
         return;
       }
