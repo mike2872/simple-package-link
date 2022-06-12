@@ -1,27 +1,31 @@
-import * as fs from 'fs';
 import * as path from 'path';
+import copyFile from './helpers/copy-file';
+import deleteFile from './helpers/delete-file';
 import { getTsConfig } from './helpers/get-config';
 import { logStep, logSubStep } from './helpers/log';
 import tsc from './helpers/tsc';
 import updateVersionNumber from './helpers/update-version-number';
-import { FileEvent } from './watch-files';
-
-const deleteFile = (path_target: string) => {
-  if (fs.existsSync(path_target)) {
-    fs.unlinkSync(path_target);
-  }
-};
+import { ChangedFileEvent, FileEventCallbacks } from './watch-files';
 
 export default async function linkFiles(
   pkg: LinkedPackage,
-  changedFiles: FileEvent[],
+  changedFiles: ChangedFileEvent[],
+  callbacks: FileEventCallbacks,
 ) {
-  const tsconfig = getTsConfig(`${pkg.src.root}/tsconfig.json`);
+  const jobCallbackId = 'package.json';
+
+  const tsconfig = pkg.tsc
+    ? getTsConfig(`${pkg.src.root}/tsconfig.json`)
+    : null;
 
   // Replace target files with changed src files
   logStep({ pkgId: pkg.id, n: 1, n_total: 3, message: `Linking files...` });
 
-  changedFiles.map(({ type, path_src, setRelinkingDone }, index) => {
+  callbacks.onChange(jobCallbackId);
+
+  changedFiles.map(({ eventType, path_src }, index) => {
+    const fileCallbackId = path_src;
+
     const {
       dir,
       name,
@@ -46,17 +50,18 @@ export default async function linkFiles(
         targetRoot: pkg?.target.root,
       }) ?? `${pkg?.target.root}${file}`;
 
-    if (type === 'added' || type === 'changed') {
+    callbacks.onChange(fileCallbackId);
+
+    if (eventType === 'add' || eventType === 'change') {
       if (pkg.tsc) {
         tsc(`${pkg.src.root}/tsconfig.json`, path_src, path_target);
-        return;
+      } else {
+        deleteFile(path_target);
+        copyFile(path_src, path_target);
       }
-
-      deleteFile(path_target);
-      fs.copyFileSync(path_src, path_target);
     }
 
-    if (type === 'deleted') {
+    if (eventType === 'unlink') {
       deleteFile(path_target);
     }
 
@@ -64,10 +69,10 @@ export default async function linkFiles(
       pkgId: pkg.id,
       n: index + 1,
       n_total: changedFiles.length,
-      message: `${type === 'deleted' ? 'Unlinked' : 'Linked'} ${file}`,
+      message: `${eventType === 'unlink' ? 'Unlinked' : 'Linked'} ${file}`,
     });
 
-    setRelinkingDone();
+    callbacks.onLinked(fileCallbackId);
   });
 
   // Update package JSON with new version number
@@ -89,4 +94,6 @@ export default async function linkFiles(
     n_total: 3,
     message: 'All files were successfully relinked',
   });
+
+  callbacks.onLinked(jobCallbackId);
 }

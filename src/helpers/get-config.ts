@@ -59,6 +59,12 @@ export async function getConfig() {
           ...pkg.target,
           root: fs.realpathSync(pkg.target.root),
         },
+        dependencyChanges: {
+          ...pkg.dependencyChanges,
+          listenLockFiles: (pkg.dependencyChanges?.listenLockFiles ?? []).map(
+            path => fs.realpathSync(path),
+          ),
+        },
       };
     }),
   } as Config;

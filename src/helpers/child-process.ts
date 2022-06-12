@@ -4,46 +4,7 @@ import {
   spawnSync,
   SpawnSyncOptionsWithStringEncoding,
 } from 'child_process';
-import { logStep } from './log';
-
-function getProcessTree(pid: string | number) {
-  const helper = (pids = [pid]) => {
-    return [
-      pids,
-      ...pids.map(childPid =>
-        childProcessSync('pgrep', {
-          args: ['-P', String(childPid)],
-          type: 'return',
-        }),
-      ),
-    ];
-  };
-
-  const tree = helper();
-  return tree.flat(Infinity).map(String);
-}
-
-const kill = (
-  type: 'SIGSTOP' | 'SIGCONT',
-  silent: boolean,
-  pid?: string | number,
-) => {
-  if (!pid) return;
-  const processTree = getProcessTree(String(pid));
-
-  if (!silent) {
-    logStep({
-      message: `${type === 'SIGSTOP' ? 'Pausing' : 'Resuming'} process ${pid}`,
-    });
-  }
-
-  processTree.forEach(pid =>
-    childProcessSync('kill', {
-      args: [`-${type.toUpperCase()}`, pid],
-      type: 'return',
-    }),
-  );
-};
+import kill from './kill';
 
 export function childProcess(
   cmd: string,
@@ -64,8 +25,9 @@ export function childProcess(
   const process = spawn(cmd, args ?? [], { cwd, ...opts });
   const pause = (silent = false) => kill('SIGSTOP', silent, process.pid);
   const resume = (silent = false) => kill('SIGCONT', silent, process.pid);
+  const terminate = (silent = false) => kill('SIGKILL', silent, process.pid);
 
-  return { process, pause, resume };
+  return { process, pause, resume, terminate };
 }
 
 export function childProcessSync(

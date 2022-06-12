@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
 import { childProcessSync } from '../helpers/child-process';
+import DevProcess from '../helpers/dev-process';
 import { getConfig } from '../helpers/get-config';
 import getCWD from '../helpers/get-cwd';
+import listenKillSignal from '../helpers/listen-kill-signal';
 import { logStep, logSubStep } from '../helpers/log';
 
 async function unlinked() {
-  const { packages, devCommand, reinstallCommand } = await getConfig();
+  const { packages, reinstallCommand } = await getConfig();
 
   logStep({
     n: 1,
@@ -43,10 +45,9 @@ async function unlinked() {
     message: 'Running dev command',
   });
 
-  childProcessSync(devCommand.cmd, {
-    args: devCommand.args,
-    cwd: getCWD(),
-  });
+  const devProcess = new DevProcess();
+  await devProcess.start();
+  listenKillSignal(devProcess);
 }
 
 unlinked();

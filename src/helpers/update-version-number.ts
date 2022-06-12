@@ -1,13 +1,12 @@
 import R from 'ramda';
 import * as fs from 'fs';
+import getPackageJson from './get-package-json';
 
 export default function updateVersionNumber(
   packageJsonPath: string,
   computeVersionNumber: (version: string) => string,
 ) {
   const updateVersionNumber = R.pipe(
-    path => fs.readFileSync(path).toString(),
-    jsonString => JSON.parse(jsonString) as Record<string, any>,
     json => ({
       ...json,
       version: computeVersionNumber(json.version),
@@ -18,5 +17,5 @@ export default function updateVersionNumber(
     },
   );
 
-  return updateVersionNumber(packageJsonPath);
+  return updateVersionNumber(getPackageJson(packageJsonPath));
 }

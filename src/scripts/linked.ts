@@ -4,15 +4,16 @@ import linkPackage from '../link-package';
 import { getConfig } from '../helpers/get-config';
 import { logStep, logSubStep } from '../helpers/log';
 import watchFiles from '../watch-files';
-import devCommand from '../helpers/dev-command';
-import suspendOnRelink from '../helpers/suspend-on-relink';
+import DevProcess from '../helpers/dev-process';
+import listenKillSignal from '../helpers/listen-kill-signal';
+import trackChangingFiles from '../helpers/track-changing-files';
 
 async function linked() {
   const { packages } = await getConfig();
-  const devProcess = await devCommand();
-  const { setIsRelinking } = await suspendOnRelink(devProcess);
+  const devProcess = new DevProcess();
+  await devProcess.start();
 
-  devProcess.pause();
+  await devProcess.pause();
 
   logStep({
     n: 1,
@@ -37,15 +38,21 @@ async function linked() {
     message: 'Starting listeners',
   });
 
+  const { onChange, onLinked } = trackChangingFiles(devProcess);
+
   for (let i = 0; i < packages.length; i++) {
     const pkg = packages[i];
+
     logSubStep({
       n: i + 1,
       n_total: packages.length,
       message: `Starting listener for ${pkg.id}`,
     });
 
-    await watchFiles(pkg, setIsRelinking);
+    watchFiles(pkg, {
+      onChange: (file, isDependency) => onChange(pkg.id, file, isDependency),
+      onLinked: file => onLinked(pkg.id, file),
+    });
   }
 
   logStep({
@@ -54,7 +61,8 @@ async function linked() {
     message: 'Running dev command',
   });
 
-  devProcess.resume();
+  await devProcess.resume();
+  listenKillSignal(devProcess);
 }
 
 linked();
