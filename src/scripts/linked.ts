@@ -8,6 +8,7 @@ import DevProcess from '../helpers/dev-process';
 import listenKillSignal from '../helpers/listen-kill-signal';
 import trackChangingFiles from '../helpers/track-changing-files';
 import syncDependencies from '../helpers/sync-dependencies';
+import cleanup from '../helpers/cleanup';
 
 async function linked() {
   const { packages } = await getConfig();
@@ -24,6 +25,14 @@ async function linked() {
       onLinked: file => onLinked(pkg.id, file),
     } as WatchFilesCallbacks;
   };
+
+  logStep({
+    n: 1,
+    n_total: 1,
+    message: 'Running cleanup',
+  });
+
+  await cleanup();
 
   logStep({
     n: 1,
