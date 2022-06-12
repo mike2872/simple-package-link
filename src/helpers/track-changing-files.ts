@@ -12,6 +12,7 @@ export default function trackChangingFiles(
     async (filesChanging: string[]) => {
       if (filesChanging.length === 0) {
         if (restartQueued) {
+          restartQueued = false;
           devProcess.restart();
         } else {
           devProcess.resume();

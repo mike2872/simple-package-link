@@ -59,11 +59,14 @@ export async function getConfig() {
           ...pkg.target,
           root: fs.realpathSync(pkg.target.root),
         },
-        dependencyChanges: {
-          ...pkg.dependencyChanges,
-          listenLockFiles: (pkg.dependencyChanges?.listenLockFiles ?? []).map(
-            path => fs.realpathSync(path),
-          ),
+        experimental: {
+          ...pkg.experimental,
+          syncDependencyChanges: {
+            ...pkg.experimental?.syncDependencyChanges,
+            listenLockFiles: (
+              pkg.experimental?.syncDependencyChanges?.listenLockFiles ?? []
+            ).map(path => fs.realpathSync(path)),
+          },
         },
       };
     }),

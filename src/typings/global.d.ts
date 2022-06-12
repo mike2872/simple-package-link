@@ -39,12 +39,14 @@ declare global {
     };
     /** Will be executed before running 'yarn pack' during initial linking */
     prepack?: Command;
-    /** Config for handling */
-    dependencyChanges?: {
-      /** The strategy is to listen for changes to the lockfile and then diff the dependencies in package.json
-       * This specifies the lockfiles to listen for. Useful when dependencies are hoisted and a top level lockfile is updated.
-       */
-      listenLockFiles: string[];
+    /** Experimental features. Not stable. */
+    experimental?: {
+      syncDependencyChanges?: {
+        /** The strategy is to listen for changes to the lockfile and then diff the dependencies in package.json
+         * This specifies the lockfiles to listen for. Useful when dependencies are hoisted and a top level lockfile is updated.
+         */
+        listenLockFiles: string[];
+      };
     };
     /** Transpile file using tsc before copying
      * Use tsconfig.json from src.root.

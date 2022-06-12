@@ -8,6 +8,8 @@ import md5Hash from './md5-hash';
 import move from './move';
 import updateVersionNumber from './update-version-number';
 import { ChangedLockFileEvent } from '../watch-files';
+import deleteFolder from './delete-folder';
+import getCWD from './get-cwd';
 
 function updateDependency(
   pkgId: string,
@@ -21,7 +23,10 @@ function updateDependency(
   });
 
   const tmpDir = mkdtempSync(
-    path.join(os.tmpdir(), `spl-${md5Hash(`${dependency}${version}`)}`),
+    path.join(
+      os.tmpdir(),
+      `spl-${md5Hash(`${dependency}${version}${new Date().toISOString()}`)}`,
+    ),
   );
 
   childProcessSync('npm', {
@@ -37,6 +42,7 @@ function updateDependency(
 
   move(`${tmpDir}/node_modules/${dependency}`, `${tmpDir}`);
   move(`${tmpDir}/node_modules`, `${tmpDir}/${dependency}`);
+  deleteFolder(`${targetRoot}/node_modules/${dependency}`);
   move(`${tmpDir}/${dependency}`, `${targetRoot}/node_modules`);
 }
 
