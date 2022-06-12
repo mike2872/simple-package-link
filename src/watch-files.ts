@@ -1,19 +1,22 @@
-import nodemon from 'nodemon';
-import uniq from 'lodash.uniq';
-import debounce from 'lodash.debounce';
+import chokidar from 'chokidar';
+import { debounce, uniq } from 'lodash';
 import linkFiles from './link-files';
-import { getConfig } from './helpers/get-config';
 
-export default async function watchFiles() {
-  const pkg = (await getConfig()).packages.find(
-    ({ id }) => id === process.argv[process.argv.length - 1],
-  );
+export type FileEvent = {
+  type: 'deleted' | 'added' | 'changed';
+  path_src: string;
+  setRelinkingDone: () => void;
+};
 
+export default async function watchFiles(
+  pkg: LinkedPackage,
+  setIsRelinking: (path: string) => () => void,
+) {
   if (!pkg) {
     throw new Error(`An unknown error occured while trying to the watcher`);
   }
 
-  let queue = [] as string[];
+  let queue = [] as FileEvent[];
 
   const debouncedLinking = debounce(
     async updatedFiles => {
@@ -27,22 +30,32 @@ export default async function watchFiles() {
     },
   );
 
-  nodemon({
-    cwd: pkg.src.root,
-    script: `/dev/null`,
-    ext: '*',
-    watch: pkg.src.include,
-    ignore: pkg.src.exclude,
-  }).on('restart', updatedFiles => {
-    updatedFiles?.forEach(updatedFile => {
-      queue.push(updatedFile);
-      debouncedLinking(queue);
+  const watcher = chokidar.watch(pkg.src.root, {
+    ...pkg.src.watcherOptions,
+    persistent: true,
+    ignoreInitial: true,
+  });
+
+  const link = (type: 'added' | 'changed' | 'deleted', path_src: string) => {
+    const ignore = ['node_modules', 'package.json'].some(excluded =>
+      path_src.includes(excluded),
+    );
+    if (ignore) return;
+
+    const setRelinkingDone = setIsRelinking(path_src);
+
+    queue.push({ type, path_src, setRelinkingDone });
+    debouncedLinking(queue);
+  };
+
+  watcher
+    .on('add', path => {
+      link('added', path);
+    })
+    .on('change', path => {
+      link('changed', path);
+    })
+    .on('unlink', path => {
+      link('deleted', path);
     });
-  });
-
-  nodemon.on('quit', () => {
-    process.exit();
-  });
 }
-
-watchFiles();

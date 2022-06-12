@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import childProcess from '../helpers/child-process';
+import { childProcessSync } from '../helpers/child-process';
 import { getConfig } from '../helpers/get-config';
 import getCWD from '../helpers/get-cwd';
 import { logStep, logSubStep } from '../helpers/log';
@@ -21,7 +21,7 @@ async function unlinked() {
       message: `Deleting ${pkg.id}`,
     });
 
-    childProcess('rm', {
+    childProcessSync('rm', {
       args: ['-rf', pkg.target.root],
     });
   });
@@ -32,7 +32,7 @@ async function unlinked() {
     message: 'Reinstalling packages',
   });
 
-  childProcess(reinstallCommand.cmd, {
+  childProcessSync(reinstallCommand.cmd, {
     args: reinstallCommand.args,
     cwd: getCWD(),
   });
@@ -43,7 +43,7 @@ async function unlinked() {
     message: 'Running dev command',
   });
 
-  childProcess(devCommand.cmd, {
+  childProcessSync(devCommand.cmd, {
     args: devCommand.args,
     cwd: getCWD(),
   });

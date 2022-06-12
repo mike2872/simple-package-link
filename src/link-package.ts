@@ -1,4 +1,4 @@
-import childProcess from './helpers/child-process';
+import { childProcessSync } from './helpers/child-process';
 import { getConfig } from './helpers/get-config';
 import updateVersionNumber from './helpers/update-version-number';
 
@@ -15,7 +15,7 @@ export default async function linkPackage(pkg: LinkedPackage) {
 
   // Run prepack hook
   if (pkg.prepack) {
-    childProcess(pkg.prepack.cmd, {
+    childProcessSync(pkg.prepack.cmd, {
       args: pkg.prepack.args,
       cwd: paths.src,
       type: childProcessType,
@@ -23,23 +23,26 @@ export default async function linkPackage(pkg: LinkedPackage) {
   }
 
   // Pack src package
-  childProcess('yarn', {
+  childProcessSync('yarn', {
     args: ['pack', '--filename', paths.packed],
     cwd: paths.src,
     type: childProcessType,
   });
 
   // Unpack src package
-  childProcess('tar', {
+  childProcessSync('tar', {
     args: ['-xzf', paths.packed, '--directory', config.tmpDir],
     type: childProcessType,
   });
 
   // Delete old node_modules package
-  childProcess('rm', { args: ['-rf', paths.target], type: childProcessType });
+  childProcessSync('rm', {
+    args: ['-rf', paths.target],
+    type: childProcessType,
+  });
 
   // Copy unpackaged folder to target
-  childProcess('cp', {
+  childProcessSync('cp', {
     args: ['-R', paths.unpacked, paths.target],
     type: childProcessType,
   });

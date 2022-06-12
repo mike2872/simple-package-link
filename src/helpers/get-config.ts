@@ -5,11 +5,16 @@ import getCWD from './get-cwd';
 import { mkdtempSync } from 'fs';
 
 const supportedNpmClients = ['yarn'];
+
 const reinstallCommands = {
   yarn: {
     cmd: 'yarn',
     args: ['--check-files'],
   },
+};
+
+const lockfileIds = {
+  yarn: 'yarn.lock',
 };
 
 export async function getConfig() {
@@ -31,15 +36,18 @@ export async function getConfig() {
   return {
     ...config,
     tmpDir,
+    lockfileId: lockfileIds[config.npmClient],
     reinstallCommand: reinstallCommands[config.npmClient],
     packages: config.packages.map(pkg => {
-      try {
-        fs.existsSync(fs.realpathSync(`${pkg.target.root}/package.json`));
-      } catch (error) {
-        throw new Error(
-          `A package.json file couldn't be found in the root specified for ${pkg.id}`,
-        );
-      }
+      [pkg.src.root, pkg.target.root].map(root => {
+        try {
+          fs.existsSync(fs.realpathSync(`${root}/package.json`));
+        } catch (error) {
+          throw new Error(
+            `${root}/package.json couldn't be found. Both 'src.root' and 'target.root' must include a package.json file`,
+          );
+        }
+      });
 
       return {
         ...pkg,

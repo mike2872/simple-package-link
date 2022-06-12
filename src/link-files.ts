@@ -4,17 +4,24 @@ import { getTsConfig } from './helpers/get-config';
 import { logStep, logSubStep } from './helpers/log';
 import tsc from './helpers/tsc';
 import updateVersionNumber from './helpers/update-version-number';
+import { FileEvent } from './watch-files';
+
+const deleteFile = (path_target: string) => {
+  if (fs.existsSync(path_target)) {
+    fs.unlinkSync(path_target);
+  }
+};
 
 export default async function linkFiles(
   pkg: LinkedPackage,
-  changedFiles: string[],
+  changedFiles: FileEvent[],
 ) {
   const tsconfig = getTsConfig(`${pkg.src.root}/tsconfig.json`);
 
   // Replace target files with changed src files
   logStep({ pkgId: pkg.id, n: 1, n_total: 3, message: `Linking files...` });
 
-  changedFiles.map((path_src, index) => {
+  changedFiles.map(({ type, path_src, setRelinkingDone }, index) => {
     const {
       dir,
       name,
@@ -39,24 +46,28 @@ export default async function linkFiles(
         targetRoot: pkg?.target.root,
       }) ?? `${pkg?.target.root}${file}`;
 
-    if (pkg.tsc) {
-      tsc(`${pkg.src.root}/tsconfig.json`, path_src, path_target);
-    }
-
-    if (!pkg.tsc) {
-      if (fs.existsSync(path_target)) {
-        fs.unlinkSync(path_target);
+    if (type === 'added' || type === 'changed') {
+      if (pkg.tsc) {
+        tsc(`${pkg.src.root}/tsconfig.json`, path_src, path_target);
+        return;
       }
 
+      deleteFile(path_target);
       fs.copyFileSync(path_src, path_target);
+    }
+
+    if (type === 'deleted') {
+      deleteFile(path_target);
     }
 
     logSubStep({
       pkgId: pkg.id,
       n: index + 1,
       n_total: changedFiles.length,
-      message: `Linked ${file}`,
+      message: `${type === 'deleted' ? 'Unlinked' : 'Linked'} ${file}`,
     });
+
+    setRelinkingDone();
   });
 
   // Update package JSON with new version number
