@@ -42,6 +42,7 @@ declare global {
     /** Experimental features. Not stable. */
     experimental?: {
       syncDependencyChanges?: {
+        enabled: boolean;
         /** The strategy is to listen for changes to the lockfile and then diff the dependencies in package.json
          * This specifies the lockfiles to listen for. Useful when dependencies are hoisted and a top level lockfile is updated.
          */
