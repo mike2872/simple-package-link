@@ -16,15 +16,19 @@ declare global {
   interface LinkedPackage {
     id: string;
     src: {
-      /** Only absolute paths are supported. Must include a package.json file */
+      /** Must include a package.json file */
       root: string;
+      /** Array of files, dirs or globs relative to root.
+       * Defaults to root
+       */
+      syncFiles: string[];
       /** See options at https://github.com/paulmillr/chokidar -
        * 'persistent' and 'ignoreInitial' is set to true and can't be changed.
        */
       watcherOptions: chokidar.WatchOptions;
     };
     target: {
-      /** Only absolute paths are supported. Must include a package.json file */
+      /** Must include a package.json file */
       root: string;
       /** Allows overriding the destination of an updated file.
        * E.g. if file is updated in src/* but needs to be placed in dist/src on target
@@ -37,8 +41,6 @@ declare global {
         targetRoot: string;
       }) => string;
     };
-    /** Will be executed before running 'yarn pack' during initial linking */
-    prepack?: Command;
     /** Experimental features. Not stable. */
     experimental?: {
       syncDependencyChanges?: {
@@ -69,4 +71,6 @@ declare global {
     reinstallCommand: Command;
     tmpDir: string;
   }
+
+  type PackageJSON = Record<string, any>;
 }

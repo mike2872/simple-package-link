@@ -1,66 +1,109 @@
 #!/usr/bin/env node
 
-import linkPackage from '../link-package';
 import { getConfig } from '../helpers/get-config';
 import { logStep, logSubStep } from '../helpers/log';
-import watchFiles, { WatchFilesCallbacks } from '../watch-files';
+import createWatcher, { ChangedFileEvent } from '../create-watcher';
 import DevProcess from '../helpers/dev-process';
 import listenKillSignal from '../helpers/listen-kill-signal';
-import trackChangingFiles from '../helpers/track-changing-files';
-import syncDependencies from '../helpers/sync-dependencies';
+import trackChangeEvents from '../helpers/track-change-events';
 import cleanup from '../helpers/cleanup';
+import trackDependencyChanges from '../helpers/track-dependency-changes';
+import checkPackageRequirements from '../helpers/check-package-requirements';
+import forEachFile from '../helpers/for-each-file';
+import deleteFile from '../helpers/delete-file';
+import linkFiles from '../link-files';
+import { statSync } from 'fs';
 
 async function linked() {
   const { packages } = await getConfig();
   const devProcess = new DevProcess();
   await devProcess.start();
-
   await devProcess.pause();
+  const newChangeEvent = trackChangeEvents(devProcess);
+  const syncDependencies = trackDependencyChanges(newChangeEvent);
 
-  const constructWatchFilesCallbacks = (pkg: LinkedPackage) => {
-    const { onChange, onLinked } = trackChangingFiles(devProcess);
+  const watchers = packages.reduce((acc, pkg) => {
+    const initialCopy = async () => {
+      forEachFile(pkg.target.root, path => {
+        if (path.includes('node_modules')) return;
+        deleteFile(path);
+      });
 
-    return {
-      onChange: (file, isDependency) => onChange(pkg.id, file, isDependency),
-      onLinked: file => onLinked(pkg.id, file),
-    } as WatchFilesCallbacks;
-  };
+      const initialCopy = [] as ChangedFileEvent[];
+
+      pkg.src.syncFiles.map(path => {
+        const initialCopyPush = (path_src: string) =>
+          initialCopy.push({
+            eventType: 'add',
+            path_src,
+          });
+
+        const stat = statSync(path);
+
+        if (stat.isFile()) {
+          initialCopyPush(path);
+        }
+
+        if (stat.isDirectory()) {
+          forEachFile(path, initialCopyPush);
+        }
+      });
+
+      await linkFiles(pkg, true, initialCopy, () => () => null);
+
+      syncDependencies(pkg);
+    };
+
+    const watchFiles = async () => {
+      await createWatcher(pkg, syncDependencies, newChangeEvent, {
+        persistent: true,
+      });
+    };
+
+    return { ...acc, [pkg.id]: { initialCopy, watchFiles } };
+  }, {} as Record<LinkedPackage['id'], Record<'initialCopy' | 'watchFiles', () => Promise<void>>>);
 
   logStep({
     n: 1,
-    n_total: 1,
+    n_total: 5,
     message: 'Running cleanup...',
+  });
+
+  logStep({
+    message: 'This can take several minutes',
   });
 
   await cleanup();
 
   logStep({
-    n: 1,
-    n_total: 3,
+    n: 2,
+    n_total: 5,
+    message: 'Checking requirements is met...',
+  });
+
+  packages.forEach(checkPackageRequirements);
+
+  logStep({
+    n: 3,
+    n_total: 5,
     message: 'Linking packages...',
   });
 
   for (let i = 0; i < packages.length; i++) {
     const pkg = packages[i];
+
     logSubStep({
       n: i + 1,
       n_total: packages.length,
       message: `Copying ${pkg.id} from src to target`,
     });
 
-    const syncDeps = syncDependencies(
-      pkg,
-      pkg.target.root,
-      constructWatchFilesCallbacks(pkg),
-    );
-
-    await linkPackage(pkg);
-    syncDeps();
+    await watchers[pkg.id].initialCopy();
   }
 
   logStep({
-    n: 2,
-    n_total: 3,
+    n: 4,
+    n_total: 5,
     message: 'Starting listeners...',
   });
 
@@ -73,12 +116,12 @@ async function linked() {
       message: `Starting listener for ${pkg.id}`,
     });
 
-    watchFiles(pkg, constructWatchFilesCallbacks(pkg));
+    await watchers[pkg.id].watchFiles();
   }
 
   logStep({
-    n: 3,
-    n_total: 3,
+    n: 5,
+    n_total: 5,
     message: 'Running dev command...',
   });
 

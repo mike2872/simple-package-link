@@ -1,6 +1,6 @@
-import updateVersionNumber from '../src/helpers/update-version-number';
+import updatePackageJson from '../src/helpers/update-package-json';
 import getCWD from '../src/helpers/get-cwd';
-import childProcess from '../src/helpers/child-process';
+import { childProcessSync } from '../src/helpers/child-process';
 
 const stages = ['patch', 'minor', 'major'] as const;
 
@@ -12,8 +12,8 @@ function incrementVersion() {
     throw new Error('Missing or unsupported stage');
   }
 
-  const newVersion = updateVersionNumber(`${cwd}/package.json`, version => {
-    const [first, middle, last] = version.split('.').map(Number);
+  const createNewVersionNumber = (currentVersion: string) => {
+    const [first, middle, last] = currentVersion.split('.').map(Number);
 
     switch (stage) {
       case 'patch':
@@ -23,12 +23,19 @@ function incrementVersion() {
       case 'major':
         return `${first + 1}.${middle}.${last}`;
     }
+  };
+
+  const newVersion = updatePackageJson(`${cwd}/package.json`, ({ version }) => {
+    return { version: createNewVersionNumber(version) };
   });
 
-  childProcess('prettier', { args: ['--write', 'package.json'], cwd });
-  childProcess('git', { args: ['add', 'package.json'], cwd });
-  childProcess('git', { args: ['commit', '-m', `publish ${newVersion}`], cwd });
-  childProcess('git', { args: ['push'], cwd });
+  childProcessSync('prettier', { args: ['--write', 'package.json'], cwd });
+  childProcessSync('git', { args: ['add', 'package.json'], cwd });
+  childProcessSync('git', {
+    args: ['commit', '-m', `publish ${newVersion}`],
+    cwd,
+  });
+  childProcessSync('git', { args: ['push'], cwd });
 }
 
 incrementVersion();

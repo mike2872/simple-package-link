@@ -2,17 +2,22 @@ import * as path from 'path';
 import copyFile from './helpers/copy-file';
 import deleteFile from './helpers/delete-file';
 import { getTsConfig } from './helpers/get-config';
-import { logStep, logSubStep } from './helpers/log';
+import { logStep as _logStep, logSubStep as _logSubStep } from './helpers/log';
+import { NewChangeEvent } from './helpers/track-change-events';
 import tsc from './helpers/tsc';
-import updateVersionNumber from './helpers/update-version-number';
-import { ChangedFileEvent, FileEventCallbacks } from './watch-files';
+import updatePackageJson from './helpers/update-package-json';
+import { ChangedFileEvent } from './create-watcher';
 
 export default async function linkFiles(
   pkg: LinkedPackage,
-  changedFiles: ChangedFileEvent[],
-  callbacks: FileEventCallbacks,
+  silent: boolean,
+  files: ChangedFileEvent[],
+  newChangeEvent: NewChangeEvent,
 ) {
-  const jobCallbackId = 'package.json';
+  const linkFilesDone = newChangeEvent({ restartRequired: false });
+
+  const logStep = silent ? () => null : _logStep;
+  const logSubStep = silent ? () => null : _logSubStep;
 
   const tsconfig = pkg.tsc
     ? getTsConfig(`${pkg.src.root}/tsconfig.json`)
@@ -21,10 +26,8 @@ export default async function linkFiles(
   // Replace target files with changed src files
   logStep({ pkgId: pkg.id, n: 1, n_total: 3, message: `Linking files...` });
 
-  callbacks.onChange(jobCallbackId);
-
-  changedFiles.map(({ eventType, path_src }, index) => {
-    const fileCallbackId = path_src;
+  files.map(({ eventType, path_src }, index) => {
+    const linkFileDone = newChangeEvent({ restartRequired: false });
 
     const {
       dir,
@@ -50,8 +53,6 @@ export default async function linkFiles(
         targetRoot: pkg?.target.root,
       }) ?? `${pkg?.target.root}${file}`;
 
-    callbacks.onChange(fileCallbackId);
-
     if (eventType === 'add' || eventType === 'change') {
       if (pkg.tsc) {
         tsc(`${pkg.src.root}/tsconfig.json`, path_src, path_target);
@@ -65,14 +66,16 @@ export default async function linkFiles(
       deleteFile(path_target);
     }
 
-    logSubStep({
-      pkgId: pkg.id,
-      n: index + 1,
-      n_total: changedFiles.length,
-      message: `${eventType === 'unlink' ? 'Unlinked' : 'Linked'} ${file}`,
-    });
+    if (!silent) {
+      logSubStep({
+        pkgId: pkg.id,
+        n: index + 1,
+        n_total: files.length,
+        message: `${eventType === 'unlink' ? 'Unlinked' : 'Linked'} ${file}`,
+      });
+    }
 
-    callbacks.onLinked(fileCallbackId);
+    linkFileDone();
   });
 
   // Update package JSON with new version number
@@ -83,10 +86,9 @@ export default async function linkFiles(
     message: `Bumping package.json...`,
   });
 
-  updateVersionNumber(
-    `${pkg.target.root}/package.json`,
-    version => `${version.split('+')[0]}+${new Date().getTime()}`,
-  );
+  updatePackageJson(`${pkg.target.root}/package.json`, ({ version }) => ({
+    version: `${version.split('+')[0]}+${new Date().getTime()}`,
+  }));
 
   logStep({
     pkgId: pkg.id,
@@ -95,5 +97,5 @@ export default async function linkFiles(
     message: 'All files were successfully relinked',
   });
 
-  callbacks.onLinked(jobCallbackId);
+  linkFilesDone();
 }

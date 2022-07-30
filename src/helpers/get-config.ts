@@ -39,16 +39,6 @@ export async function getConfig() {
     lockfileId: lockfileIds[config.npmClient],
     reinstallCommand: reinstallCommands[config.npmClient],
     packages: config.packages.map(pkg => {
-      [pkg.src.root, pkg.target.root].map(root => {
-        try {
-          fs.existsSync(fs.realpathSync(`${root}/package.json`));
-        } catch (error) {
-          throw new Error(
-            `${root}/package.json couldn't be found. Both 'src.root' and 'target.root' must include a package.json file`,
-          );
-        }
-      });
-
       return {
         ...pkg,
         src: {
