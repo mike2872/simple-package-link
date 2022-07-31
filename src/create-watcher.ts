@@ -85,9 +85,7 @@ export default function createWatcher(
     });
 
     watcher.on('ready', () => {
-      watcher.close().then(() => {
-        resolve();
-      });
+      resolve();
     });
   });
 }
