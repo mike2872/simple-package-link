@@ -63,7 +63,7 @@ declare global {
     debug?: boolean;
     /** Supported: 'yarn' */
     npmClient: 'yarn';
-    /** Command to run after linking / unlinked */
+    /** Command to run after linking */
     devCommand: Command;
     /** Packages to watch */
     packages: LinkedPackage[];

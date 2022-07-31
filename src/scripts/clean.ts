@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 
-import { childProcessSync } from '../helpers/child-process';
 import cleanup from '../helpers/cleanup';
-import DevProcess from '../helpers/dev-process';
+import deleteFolder from '../helpers/delete-folder';
 import { getConfig } from '../helpers/get-config';
-import listenKillSignal from '../helpers/listen-kill-signal';
 import { logStep, logSubStep } from '../helpers/log';
 
-async function unlinked() {
+async function clean() {
   const { packages } = await getConfig();
 
   logStep({
@@ -23,9 +21,7 @@ async function unlinked() {
       message: `Deleting ${pkg.id}`,
     });
 
-    childProcessSync('rm', {
-      args: ['-rf', pkg.target.root],
-    });
+    deleteFolder(pkg.target.root);
   });
 
   logStep({
@@ -35,16 +31,6 @@ async function unlinked() {
   });
 
   await cleanup();
-
-  logStep({
-    n: 3,
-    n_total: 3,
-    message: 'Running dev command...',
-  });
-
-  const devProcess = new DevProcess();
-  await devProcess.start();
-  listenKillSignal(devProcess);
 }
 
-unlinked();
+clean();

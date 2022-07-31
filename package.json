@@ -24,7 +24,7 @@
   },
   "bin": {
     "spl-linked": "./lib/scripts/linked.js",
-    "spl-unlinked": "./lib/scripts/unlinked.js"
+    "spl-clean": "./lib/scripts/clean.js"
   },
   "scripts": {
     "test": "pnpm run lint && pnpm run compile && pnpm run jest",
