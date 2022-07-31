@@ -17,8 +17,7 @@ const lockfileIds = {
   yarn: 'yarn.lock',
 };
 
-export async function getConfig() {
-  const tmpDir = mkdtempSync(path.join(os.tmpdir(), 'spl-'));
+const importConfig = async () => {
   const cwd = getCWD();
   const config = (await import(`${cwd}/spl.config.js`)) as Omit<
     Config,
@@ -29,15 +28,31 @@ export async function getConfig() {
     throw new Error(`Couldn't find a spl.config.js in root`);
   }
 
-  if (!supportedNpmClients.includes(config.npmClient)) {
+  return config;
+};
+
+export const getNPMClientSpecificConfig = async () => {
+  const { npmClient } = await importConfig();
+
+  if (!supportedNpmClients.includes(npmClient)) {
     throw new Error(`Your NPM client isn't currently supported`);
   }
 
   return {
+    lockfileId: lockfileIds[npmClient],
+    reinstallCommand: reinstallCommands[npmClient],
+  };
+};
+
+export async function getConfig() {
+  const tmpDir = mkdtempSync(path.join(os.tmpdir(), 'spl-'));
+  const config = await importConfig();
+  const npmClientSpecificConfig = await getNPMClientSpecificConfig();
+
+  return {
     ...config,
     tmpDir,
-    lockfileId: lockfileIds[config.npmClient],
-    reinstallCommand: reinstallCommands[config.npmClient],
+    ...npmClientSpecificConfig,
     packages: config.packages.map(pkg => {
       return {
         ...pkg,
