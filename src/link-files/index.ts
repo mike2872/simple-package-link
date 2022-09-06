@@ -16,11 +16,11 @@ export default async function linkFiles(
   // Replace target files with changed src files
   logStep({ pkgId: pkg.id, n: 1, n_total: 3, message: `Linking files...` });
 
-  if (pkg.target.strategy.type === 'direct-copy') {
+  if (pkg.strategy.type === 'direct-copy') {
     await strategies.directCopy(pkg, silent, files, newChangeEvent);
   }
 
-  if (pkg.target.strategy.type === 'build-before-copy') {
+  if (pkg.strategy.type === 'build-before-copy') {
     await strategies.buildBeforeCopy(pkg);
   }
 

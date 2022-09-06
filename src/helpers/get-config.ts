@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as os from 'os';
 import getCWD from './get-cwd';
 import { mkdtempSync } from 'fs';
+import importModuleWithRequire from './import-module-with-require';
 
 const supportedNpmClients = ['yarn'];
 
@@ -26,23 +27,23 @@ const getTmpDir = () => {
   return tmpDir;
 };
 
-const importConfig = async () => {
+const importConfig = () => {
   const cwd = getCWD();
 
-  const config = (await import(`${cwd}/spl.config.js`)) as Omit<
+  const config = importModuleWithRequire(`${cwd}/spl.config.ts`) as Omit<
     Config,
     'reinstallCommand' | 'tmpDir'
   >;
 
   if (!config) {
-    throw new Error(`Couldn't find a spl.config.js in root`);
+    throw new Error(`Couldn't find a spl.config.ts in root`);
   }
 
   return config;
 };
 
 export const getNPMClientSpecificConfig = async () => {
-  const { npmClient } = await importConfig();
+  const { npmClient } = importConfig();
 
   if (!supportedNpmClients.includes(npmClient)) {
     throw new Error(`Your NPM client isn't currently supported`);
@@ -57,7 +58,7 @@ export const getNPMClientSpecificConfig = async () => {
 export async function getConfig() {
   const cwd = process.cwd();
   const tmpDir = getTmpDir();
-  const config = await importConfig();
+  const config = importConfig();
   const npmClientSpecificConfig = await getNPMClientSpecificConfig();
 
   const runtimeConfig = {
@@ -68,7 +69,7 @@ export async function getConfig() {
       const srcRoot = `${cwd}/${pkg.src.root}`;
       const syncFiles = pkg.src.syncFiles.map(file => `${srcRoot}/${file}`);
       const targetRoot = `${cwd}/${pkg.target.root}`;
-      const strategy = pkg.target.strategy;
+      const strategy = pkg.strategy;
       const strategyOptions = strategy.options;
       const buildOptions = strategyOptions?.build;
       const buildOutDir = buildOptions?.outDir

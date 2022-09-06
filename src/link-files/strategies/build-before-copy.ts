@@ -4,7 +4,7 @@ import forEachFile from '../../helpers/for-each-file';
 import determinePathTarget from '../determine-path-target';
 
 export default async function buildBeforeCopy(pkg: LinkedPackage) {
-  const buildOptions = pkg.target.strategy.options?.build;
+  const buildOptions = pkg.strategy.options?.build;
   if (!buildOptions) throw new Error('No build options specified');
 
   childProcessSync(buildOptions.cmd, {

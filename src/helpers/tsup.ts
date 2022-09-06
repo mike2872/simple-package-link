@@ -1,32 +1,13 @@
 import { build } from 'tsup';
-import { register, Service } from 'ts-node';
 import fs from 'fs';
 import forEachFile from './for-each-file';
 import { getConfig } from './get-config';
 import deleteFolder from './delete-folder';
-
-let tsNodeInstance: Nullable<Service> = null;
-function registerTsNodeInstance() {
-  if (!tsNodeInstance) {
-    tsNodeInstance = register({
-      typeCheck: false,
-      compilerOptions: {
-        module: 'commonjs',
-      },
-    });
-  }
-}
-
-const getTsUpConfig = (tsupConfigPath: string) => {
-  /** ts-node needs to be in scope */
-  registerTsNodeInstance();
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  return require(tsupConfigPath).default;
-};
+import importModuleWithRequire from './import-module-with-require';
 
 export default async function tsup(pkg: LinkedPackage, tsupConfigPath: string) {
   const { tmpDir } = await getConfig();
-  const tsupConfig = getTsUpConfig(tsupConfigPath);
+  const tsupConfig = importModuleWithRequire(tsupConfigPath);
   const outDir = `${tmpDir}/tsup/${pkg.id}`;
 
   const getEntryAbsPath = (entry: string | string[]) => {

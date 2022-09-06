@@ -11,7 +11,7 @@ export default function determinePathTarget(
   const file = `${dir}/${base}`;
 
   const path_target =
-    pkg?.target?.strategy.options?.modifyTargetPath?.({
+    pkg?.target?.modifyTargetPath?.({
       name,
       ext,
       relativePath: file,

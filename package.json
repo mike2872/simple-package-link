@@ -31,7 +31,7 @@
     "test": "pnpm run lint && pnpm run compile && pnpm run jest",
     "lint": "eslint src/. test/. --config .eslintrc.json --ext .ts --fix",
     "jest": "jest --forceExit",
-    "compile": "shx rm -rf lib/ && tsc",
+    "compile": "shx rm -rf lib/ && tsc && cp src/typings/index.d.ts lib/index.d.ts",
     "prepare": "husky install",
     "prepublish": "pnpm compile",
     "increment-version": "ts-node ./scripts/increment-version.ts",
