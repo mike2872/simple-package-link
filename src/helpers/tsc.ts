@@ -1,16 +1,25 @@
 import ts from 'typescript';
 import * as fs from 'fs';
-import { getTsConfig } from './get-config';
 
-export default function tsc(targetRoot: string, src: string, target: string) {
-  const tsconfig = getTsConfig(targetRoot);
+export function getTsConfig(tsConfigPath: string) {
+  try {
+    return JSON.parse(fs.readFileSync(tsConfigPath).toString()) as Record<
+      string,
+      any
+    >;
+  } catch (error) {
+    throw new Error(`There was a problem fetching tsconfig.json in src.root`);
+  }
+}
+
+export default function tsc(tsConfigPath: string, src: string, target: string) {
+  const tsConfig = getTsConfig(tsConfigPath);
   const code = fs.readFileSync(src).toString();
 
   const result = ts.transpileModule(code, {
-    ...tsconfig,
+    ...tsConfig,
   });
 
   fs.writeFileSync(target, result.outputText);
-
-  return target;
+  // Remember to move declaration file
 }

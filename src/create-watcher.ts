@@ -58,10 +58,9 @@ export default function createWatcher(
 
     (['add', 'change', 'unlink'] as const).forEach(eventType => {
       watcher.on(eventType, async _changedFile => {
-        console.log(_changedFile);
         const changedFile = `${watcherCwd}/${_changedFile}`;
 
-        const dependenciesUpdated = experimentalSyncDeps?.listenLockFiles.some(
+        const dependenciesUpdated = experimentalSyncDeps?.listenLockFiles?.some(
           lockfile => changedFile === lockfile,
         );
 

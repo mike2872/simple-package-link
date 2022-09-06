@@ -13,6 +13,9 @@ declare global {
     args: string[];
   };
 
+  type;
+
+  /** All paths should be relative to root. Absolute paths not supported */
   interface LinkedPackage {
     id: string;
     src: {
@@ -30,16 +33,27 @@ declare global {
     target: {
       /** Must include a package.json file */
       root: string;
-      /** Allows overriding the destination of an updated file.
-       * E.g. if file is updated in src/* but needs to be placed in dist/src on target
-       * Only absolute paths are supported */
-      oncopy?: (params: {
-        name: string;
-        ext: string;
-        relativePath: string;
-        src: string;
-        targetRoot: string;
-      }) => string;
+      strategy: {
+        type: 'direct-copy' | 'build-before-copy';
+        options?: {
+          /** Allows overriding the destination of an updated file.
+           * E.g. if file is updated in src/* but needs to be placed in dist/src on target.
+           * Only used is type is set to 'direct-copy' */
+          modifyTargetPath?: (params: {
+            name: string;
+            ext: string;
+            relativePath: string;
+            src: string;
+            targetRoot: string;
+          }) => string;
+          /** A command from package.json scripts used for building before copying */
+          build?: {
+            cmd: string;
+            args: string[];
+            outDir: string;
+          };
+        };
+      };
     };
     /** Experimental features. Not stable. */
     experimental?: {
@@ -51,11 +65,6 @@ declare global {
         listenLockFiles: string[];
       };
     };
-    /** Transpile file using tsc before copying
-     * Use tsconfig.json from src.root.
-     * Returns the target destination.
-     */
-    tsc?: boolean;
   }
 
   interface Config {

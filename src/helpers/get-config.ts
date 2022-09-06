@@ -17,8 +17,18 @@ const lockfileIds = {
   yarn: 'yarn.lock',
 };
 
+let tmpDir = null as Nullable<string>;
+const getTmpDir = () => {
+  if (!tmpDir) {
+    tmpDir = mkdtempSync(path.join(os.tmpdir(), 'spl-'));
+  }
+
+  return tmpDir;
+};
+
 const importConfig = async () => {
   const cwd = getCWD();
+
   const config = (await import(`${cwd}/spl.config.js`)) as Omit<
     Config,
     'reinstallCommand' | 'tmpDir'
@@ -45,43 +55,93 @@ export const getNPMClientSpecificConfig = async () => {
 };
 
 export async function getConfig() {
-  const tmpDir = mkdtempSync(path.join(os.tmpdir(), 'spl-'));
+  const cwd = process.cwd();
+  const tmpDir = getTmpDir();
   const config = await importConfig();
   const npmClientSpecificConfig = await getNPMClientSpecificConfig();
 
-  return {
+  const runtimeConfig = {
     ...config,
     tmpDir,
     ...npmClientSpecificConfig,
     packages: config.packages.map(pkg => {
+      const srcRoot = `${cwd}/${pkg.src.root}`;
+      const syncFiles = pkg.src.syncFiles.map(file => `${srcRoot}/${file}`);
+      const targetRoot = `${cwd}/${pkg.target.root}`;
+      const strategy = pkg.target.strategy;
+      const strategyOptions = strategy.options;
+      const buildOptions = strategyOptions?.build;
+      const buildOutDir = buildOptions?.outDir
+        ? `${cwd}/${buildOptions?.outDir}`
+        : '';
+      const experimentalOptions = pkg.experimental;
+      const syncDependencyChanges = experimentalOptions?.syncDependencyChanges;
+      const listenLockFiles = syncDependencyChanges?.listenLockFiles?.map(
+        path => path,
+      );
+
       return {
         ...pkg,
         src: {
           ...pkg.src,
-          root: fs.realpathSync(pkg.src.root),
+          root: srcRoot,
+          syncFiles,
         },
         target: {
           ...pkg.target,
-          root: fs.realpathSync(pkg.target.root),
+          root: targetRoot,
+          strategy: {
+            ...strategy,
+            options: {
+              ...strategyOptions,
+              bundler: {
+                ...buildOptions,
+                outDir: buildOutDir,
+              },
+            },
+          },
         },
         experimental: {
-          ...pkg.experimental,
+          ...experimentalOptions,
           syncDependencyChanges: {
-            ...pkg.experimental?.syncDependencyChanges,
-            listenLockFiles: (
-              pkg.experimental?.syncDependencyChanges?.listenLockFiles ?? []
-            ).map(path => fs.realpathSync(path)),
+            ...syncDependencyChanges,
+            listenLockFiles: listenLockFiles,
           },
         },
       };
     }),
   } as Config;
-}
 
-export function getTsConfig(tsconfigPath: string) {
-  try {
-    return JSON.parse(fs.readFileSync(tsconfigPath).toString());
-  } catch (error) {
-    throw new Error(`There was a problem fetching tsconfig.json in src.root`);
-  }
+  return {
+    ...runtimeConfig,
+    // Transforms relative paths to real paths
+    packages: runtimeConfig.packages.map(pkg => {
+      const traverseObj = (obj: Record<string, any>): any => {
+        return Object.entries(obj).reduce((acc, [key, value]) => {
+          const isObject =
+            typeof value === 'object' &&
+            !Array.isArray(value) &&
+            value !== null;
+
+          const relativeToRealPath = (path: string) => {
+            if (!path || typeof path !== 'string') return path;
+            return path.includes(cwd) ? fs.realpathSync(path) : path;
+          };
+
+          if (isObject) {
+            return { ...acc, [key]: traverseObj(value) };
+          }
+
+          return {
+            ...acc,
+            [key]: Array.isArray(value)
+              ? value.map(relativeToRealPath)
+              : relativeToRealPath(value),
+          };
+        }, {} as typeof obj);
+      };
+
+      return traverseObj(pkg) as typeof pkg;
+    }),
+  };
 }
