@@ -4,6 +4,7 @@ import * as os from 'os';
 import getCWD from './get-cwd';
 import { mkdtempSync } from 'fs';
 import importModuleWithRequire from './import-module-with-require';
+import makeDir from './make-dir';
 
 const supportedNpmClients = ['yarn'];
 
@@ -117,6 +118,10 @@ export async function getConfig() {
     ...runtimeConfig,
     // Transforms relative paths to real paths
     packages: runtimeConfig.packages.map(pkg => {
+      if (pkg.strategy.type === 'build-before-copy') {
+        makeDir(pkg.strategy.options?.build?.outDir ?? '');
+      }
+
       const traverseObj = (obj: Record<string, any>): any => {
         return Object.entries(obj).reduce((acc, [key, value]) => {
           const isObject =
