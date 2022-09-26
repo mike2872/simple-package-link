@@ -23,7 +23,7 @@ export interface LinkedPackage {
     /** Must include a package.json file */
     root: string;
     /** Array of files, dirs or globs relative to root.
-     * Defaults to root
+     * Must be a non-empty array and can't include the packages root.
      */
     syncFiles: string[];
     /** See options at https://github.com/paulmillr/chokidar -
