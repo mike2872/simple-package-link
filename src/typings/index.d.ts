@@ -29,7 +29,7 @@ export interface LinkedPackage {
     /** See options at https://github.com/paulmillr/chokidar -
      * 'persistent' and 'ignoreInitial' is set to true and can't be changed.
      */
-    watcherOptions: chokidar.WatchOptions;
+    watcherOptions?: chokidar.WatchOptions;
   };
   target: {
     /** Must include a package.json file */
