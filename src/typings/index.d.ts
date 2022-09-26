@@ -69,3 +69,5 @@ export interface Config {
   reinstallCommand: Command;
   tmpDir: string;
 }
+
+export type SPLConfig = Omit<Config, 'reinstallCommand' | 'tmpDir'>;
