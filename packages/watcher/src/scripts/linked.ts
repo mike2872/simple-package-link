@@ -14,7 +14,7 @@ import {
   checkPackageRequirements,
   forEachFile,
   deleteFile,
-} from 'simple-package-link-utils/dist';
+} from '@mike2872/simple-package-link-utils/dist';
 
 async function linked() {
   const { packages } = await getConfig();

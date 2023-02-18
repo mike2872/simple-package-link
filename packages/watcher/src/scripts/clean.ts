@@ -6,7 +6,7 @@ import {
   getConfig,
   logStep,
   logSubStep,
-} from 'simple-package-link-utils';
+} from '@mike2872/simple-package-link-utils';
 
 async function clean() {
   const { packages } = await getConfig();

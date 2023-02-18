@@ -2,7 +2,7 @@ import {
   updatePackageJson,
   NewChangeEvent,
   logStep as _logStep,
-} from 'simple-package-link-utils';
+} from '@mike2872/simple-package-link-utils';
 import { ChangedFileEvent } from '../create-watcher';
 import strategies from './strategies';
 

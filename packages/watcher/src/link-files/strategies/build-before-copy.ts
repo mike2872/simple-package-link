@@ -3,7 +3,7 @@ import {
   copyFile,
   forEachFile,
   getConfig,
-} from 'simple-package-link-utils';
+} from '@mike2872/simple-package-link-utils';
 import determinePathTarget from '../determine-path-target';
 
 export default async function buildBeforeCopy(pkg: LinkedPackage) {

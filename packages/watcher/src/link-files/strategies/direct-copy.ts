@@ -4,7 +4,7 @@ import {
   deleteFile,
   logSubStep as _logSubStep,
   NewChangeEvent,
-} from 'simple-package-link-utils';
+} from '@mike2872/simple-package-link-utils';
 import determinePathTarget from '../determine-path-target';
 import { LinkedPackage } from '../../../../../typings';
 
