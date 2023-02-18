@@ -1,7 +1,7 @@
 {
   "name": "simple-package-link-watcher",
   "description": "",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "homepage": "",
   "private": false,
   "keywords": [],
@@ -69,7 +69,7 @@
     "ts-jest": "^28.0.4",
     "ts-node-dev": "^2.0.0",
     "tsup": "^6.6.3",
-    "simple-package-link-utils": "0.0.0"
+    "simple-package-link-utils": "1.0.0"
   },
   "resolutions": {}
 }
