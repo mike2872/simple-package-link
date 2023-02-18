@@ -22,6 +22,8 @@ jobs:
         with:
           node-version: 16
           cache: "pnpm"
+        env:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install dependencies
         run: pnpm install
       - name: Create Release Pull Request or Publish to npm
@@ -33,4 +35,4 @@ jobs:
           commit: "ci(root): release versions"
           publish: pnpm run release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
