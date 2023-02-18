@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "declaration": true,
+    "noEmit": false,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "incremental": false,
+    "checkJs": false,
+    "noErrorTruncation": true,
+    "importHelpers": true,
+    "removeComments": true,
+    "jsx": "react-jsx"
+  },
+  "include": ["./src", "package.json"],
+  "exclude": ["test"],
+  "ts-node": {
+    "files": true
+  }
+}
