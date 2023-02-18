@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@2.0.0/schema.json",
-  "changelog": ["@changesets/changelog-github", { "repo": "simple-package-link" }],
+  "changelog": ["@changesets/changelog-github", { "repo": "mike2872/simple-package-link" }],
   "commit": false,
   "fixed": [],
   "linked": [],
