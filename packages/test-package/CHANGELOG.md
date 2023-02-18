@@ -1,5 +1,15 @@
 # simple-package-link-test-package
 
+## 1.1.0
+
+### Minor Changes
+
+- [`a59f73b`](https://github.com/mike2872/simple-package-link/commit/a59f73bb25a31c9f2578386b002872adec5d74e3) Thanks [@mike2872](https://github.com/mike2872)! - Changed NPM registry to GitHub + changed package naming to @mike2872
+
+### Patch Changes
+
+- [`c18d75a`](https://github.com/mike2872/simple-package-link/commit/c18d75a3cc8bdc19446166a9abda156af23691bc) Thanks [@mike2872](https://github.com/mike2872)! - Changed utils reference to mike2872
+
 ## 1.0.0
 
 ### Major Changes
