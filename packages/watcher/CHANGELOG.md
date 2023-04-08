@@ -1,5 +1,12 @@
 # simple-package-link
 
+## 4.11.1
+
+### Patch Changes
+
+- Updated dependencies [[`0e14a75`](https://github.com/mike2872/simple-package-link/commit/0e14a75e8e6f92e81df428fdb01ae74331884d05)]:
+  - simple-package-link-utils@1.4.0
+
 ## 4.11.0
 
 ### Minor Changes
