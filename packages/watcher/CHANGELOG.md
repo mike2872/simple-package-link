@@ -1,4 +1,4 @@
-# simple-package-link-watcher
+# simple-package-link
 
 ## 1.1.0
 
