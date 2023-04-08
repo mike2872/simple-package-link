@@ -1,5 +1,11 @@
 # simple-package-link
 
+## 4.9.0
+
+### Minor Changes
+
+- [`14947df`](https://github.com/mike2872/simple-package-link/commit/14947df98fd7c7225af7129980506f7d3ffef3bc) Thanks [@mike2872](https://github.com/mike2872)! - Reverted the use of GitHub package registry
+
 ## 1.1.0
 
 ### Minor Changes
