@@ -1,5 +1,11 @@
 # simple-package-link-utils
 
+## 1.4.0
+
+### Minor Changes
+
+- [`0e14a75`](https://github.com/mike2872/simple-package-link/commit/0e14a75e8e6f92e81df428fdb01ae74331884d05) Thanks [@mike2872](https://github.com/mike2872)! - Added tsup to dependencies
+
 ## 1.3.0
 
 ### Minor Changes
