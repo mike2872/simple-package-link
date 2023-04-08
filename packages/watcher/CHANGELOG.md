@@ -1,5 +1,11 @@
 # simple-package-link
 
+## 4.10.0
+
+### Minor Changes
+
+- [`e501540`](https://github.com/mike2872/simple-package-link/commit/e50154090ae64b7b87914b8824e478dca770d703) Thanks [@mike2872](https://github.com/mike2872)! - Added utils to dependencies
+
 ## 4.9.0
 
 ### Minor Changes
