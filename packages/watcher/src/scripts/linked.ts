@@ -14,7 +14,7 @@ import {
   checkPackageRequirements,
   forEachFile,
   deleteFile,
-} from '@spl/utils';
+} from 'simple-package-link-utils';
 
 async function linked() {
   const { packages } = await getConfig();

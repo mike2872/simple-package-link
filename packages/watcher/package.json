@@ -1,5 +1,5 @@
 {
-  "name": "@spl/watcher",
+  "name": "simple-package-link",
   "description": "",
   "version": "4.10.0",
   "homepage": "",
@@ -43,7 +43,7 @@
     "ignore": []
   },
   "dependencies": {
-    "@spl/utils": "1.2.0",
+    "simple-package-link-utils": "1.2.0",
     "chokidar": "^3.5.3",
     "concurrently": "^7.2.1",
     "lodash": "^4.17.21",
