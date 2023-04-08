@@ -141,7 +141,7 @@ importers:
         specifier: 1.22.18
         version: 1.22.18
     devDependencies:
-      '@mike2872/simple-package-link-utils':
+      '@spl/utils':
         specifier: 1.2.0
         version: link:../utils
       '@types/chokidar':

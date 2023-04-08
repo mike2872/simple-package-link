@@ -2,10 +2,7 @@ import chokidar from 'chokidar';
 import * as path from 'path';
 import { debounce, uniq } from 'lodash';
 import linkFiles from './link-files';
-import {
-  SyncDependencies,
-  NewChangeEvent,
-} from '@mike2872/simple-package-link-utils';
+import { SyncDependencies, NewChangeEvent } from '@spl/utils';
 import { LinkedPackage } from '../../../typings';
 
 export interface ChangedFileEvent {

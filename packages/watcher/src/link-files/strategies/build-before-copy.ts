@@ -1,9 +1,4 @@
-import {
-  childProcessSync,
-  copyFile,
-  forEachFile,
-  getConfig,
-} from '@mike2872/simple-package-link-utils';
+import { childProcessSync, copyFile, forEachFile, getConfig } from '@spl/utils';
 import determinePathTarget from '../determine-path-target';
 
 export default async function buildBeforeCopy(pkg: LinkedPackage) {
