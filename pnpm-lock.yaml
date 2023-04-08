@@ -116,6 +116,9 @@ importers:
 
   packages/watcher:
     dependencies:
+      '@spl/utils':
+        specifier: 1.2.0
+        version: link:../utils
       chokidar:
         specifier: ^3.5.3
         version: 3.5.3
@@ -141,9 +144,6 @@ importers:
         specifier: 1.22.18
         version: 1.22.18
     devDependencies:
-      '@spl/utils':
-        specifier: 1.2.0
-        version: link:../utils
       '@types/chokidar':
         specifier: ^2.1.3
         version: 2.1.3
