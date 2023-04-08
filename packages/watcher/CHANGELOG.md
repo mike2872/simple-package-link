@@ -1,5 +1,16 @@
 # simple-package-link
 
+## 4.11.0
+
+### Minor Changes
+
+- [`069ba18`](https://github.com/mike2872/simple-package-link/commit/069ba18c9c8c6b932e356f8ba776f8335ff43305) Thanks [@mike2872](https://github.com/mike2872)! - Reverted @spl naming
+
+### Patch Changes
+
+- Updated dependencies [[`069ba18`](https://github.com/mike2872/simple-package-link/commit/069ba18c9c8c6b932e356f8ba776f8335ff43305)]:
+  - simple-package-link-utils@1.3.0
+
 ## 4.10.0
 
 ### Minor Changes

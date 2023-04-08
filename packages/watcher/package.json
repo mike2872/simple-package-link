@@ -1,7 +1,7 @@
 {
   "name": "simple-package-link",
   "description": "",
-  "version": "4.10.0",
+  "version": "4.11.0",
   "homepage": "",
   "private": false,
   "keywords": [],
@@ -43,7 +43,7 @@
     "ignore": []
   },
   "dependencies": {
-    "simple-package-link-utils": "1.2.0",
+    "simple-package-link-utils": "1.3.0",
     "chokidar": "^3.5.3",
     "concurrently": "^7.2.1",
     "lodash": "^4.17.21",
