@@ -1,5 +1,16 @@
 # simple-package-link
 
+## 5.2.0
+
+### Minor Changes
+
+- [`ed0be3d`](https://github.com/mike2872/simple-package-link/commit/ed0be3d490cbc12ab2563378b92c7fa9781dd6a4) Thanks [@mike2872](https://github.com/mike2872)! - Removed comment
+
+### Patch Changes
+
+- Updated dependencies [[`ed0be3d`](https://github.com/mike2872/simple-package-link/commit/ed0be3d490cbc12ab2563378b92c7fa9781dd6a4)]:
+  - simple-package-link-utils@2.2.0
+
 ## 5.1.0
 
 ### Minor Changes
