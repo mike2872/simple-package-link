@@ -9,15 +9,17 @@ export default function determinePathTarget(
   );
 
   const file = `${dir}/${base}`;
-
-  const path_target =
-    pkg?.target?.modifyTargetPath?.({
-      name,
-      ext,
-      relativePath: file,
-      src: path_src,
-      targetRoot: pkg?.target.root,
-    }) ?? `${pkg?.target.root}${file}`;
+  const path_target = pkg.target.root.resolved?.map((targetRoot: string) => {
+    return (
+      pkg?.target?.modifyTargetPath?.({
+        name,
+        ext,
+        relativePath: file,
+        src: path_src,
+        targetRoot,
+      }) ?? `${pkg?.target.root}${file}`
+    );
+  });
 
   return { file, path_target };
 }

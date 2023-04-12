@@ -24,7 +24,7 @@ async function clean() {
       message: `Deleting ${pkg.id}`,
     });
 
-    deleteFolder(pkg.target.root);
+    pkg.target.root.resolved?.forEach(deleteFolder);
   });
 
   logStep({

@@ -1,10 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import util from 'util';
 import { getCWD } from './get-cwd';
 import { mkdtempSync } from 'fs';
 import { importModuleWithRequire } from './import-module-with-require';
 import { makeDir } from './make-dir';
+import resolveGlob from './resolve-glob';
+import { logStep } from './log';
 
 const supportedNpmClients = ['yarn'];
 
@@ -28,7 +31,7 @@ const getTmpDir = () => {
   return tmpDir;
 };
 
-const importConfig = () => {
+export const importConfig = () => {
   const cwd = getCWD();
 
   const config = importModuleWithRequire(`${cwd}/spl.config.ts`) as Omit<
@@ -56,68 +59,95 @@ export const getNPMClientSpecificConfig = async () => {
   };
 };
 
+export let cachedConfig = null as Nullable<Config>;
+
 export async function getConfig() {
+  if (cachedConfig) return cachedConfig as Config;
   const cwd = process.cwd();
   const tmpDir = getTmpDir();
   const config = importConfig();
   const npmClientSpecificConfig = await getNPMClientSpecificConfig();
 
-  const runtimeConfig = {
+  logStep({ message: 'Generating configuration file...' });
+
+  const _runtimeConfig = {
     ...config,
     tmpDir,
     ...npmClientSpecificConfig,
-    packages: config.packages.map(pkg => {
-      const srcRoot = `${cwd}/${pkg.src.root}`;
-      const syncFiles = pkg.src.syncFiles.map(file => `${srcRoot}/${file}`);
-      const targetRoot = `${cwd}/${pkg.target.root}`;
-      const strategy = pkg.strategy;
-      const strategyOptions = strategy.options;
-      const buildOptions = strategyOptions?.build;
-      const buildOutDir = buildOptions?.outDir
-        ? `${cwd}/${buildOptions?.outDir}`
-        : '';
-      const experimentalOptions = pkg.experimental;
-      const syncDependencyChanges = experimentalOptions?.syncDependencyChanges;
-      const listenLockFiles = syncDependencyChanges?.listenLockFiles?.map(
-        path => path,
-      );
+    packages: await Promise.all(
+      config.packages.map(async pkg => {
+        const srcRoot = `${cwd}/${pkg.src.root}`;
+        const syncFiles = pkg.src.syncFiles.map(file => `${srcRoot}/${file}`);
+        const strategy = pkg.strategy;
+        const strategyOptions = strategy.options;
+        const buildOptions = strategyOptions?.build;
+        const buildOutDir = buildOptions?.outDir
+          ? `${cwd}/${buildOptions?.outDir}`
+          : '';
+        const experimentalOptions = pkg.experimental;
+        const syncDependencyChanges =
+          experimentalOptions?.syncDependencyChanges;
+        const listenLockFiles = syncDependencyChanges?.listenLockFiles?.map(
+          path => path,
+        );
 
-      return {
-        ...pkg,
-        src: {
-          ...pkg.src,
-          root: srcRoot,
-          syncFiles,
-        },
-        target: {
-          ...pkg.target,
-          root: targetRoot,
-          strategy: {
-            ...strategy,
-            options: {
-              ...strategyOptions,
-              bundler: {
-                ...buildOptions,
-                outDir: buildOutDir,
+        const targetRoot = pkg.target.root;
+        const resolvedTargetRoot = targetRoot.glob
+          ? await resolveGlob(
+              targetRoot.glob.workspaceFolder,
+              targetRoot.glob.exp,
+            )
+          : [`${cwd}/${targetRoot.path}`];
+
+        if (resolvedTargetRoot.length < 1) {
+          throw new Error(`${pkg.id}: Couldn't resolve target root`);
+        }
+
+        resolvedTargetRoot.forEach(target => {
+          if (!fs.existsSync(`${target}/package.json`)) {
+            throw new Error(
+              `${pkg.id}: Target root must have a package.json file`,
+            );
+          }
+        });
+
+        return {
+          ...pkg,
+          src: {
+            ...pkg.src,
+            root: srcRoot,
+            syncFiles,
+          },
+          target: {
+            ...pkg.target,
+            root: { resolved: resolvedTargetRoot },
+            strategy: {
+              ...strategy,
+              options: {
+                ...strategyOptions,
+                bundler: {
+                  ...buildOptions,
+                  outDir: buildOutDir,
+                },
               },
             },
           },
-        },
-        experimental: {
-          ...experimentalOptions,
-          syncDependencyChanges: {
-            ...syncDependencyChanges,
-            listenLockFiles: listenLockFiles,
+          experimental: {
+            ...experimentalOptions,
+            syncDependencyChanges: {
+              ...syncDependencyChanges,
+              listenLockFiles: listenLockFiles,
+            },
           },
-        },
-      };
-    }),
+        };
+      }),
+    ),
   } as Config;
 
-  return {
-    ...runtimeConfig,
+  const runtimeConfig = {
+    ..._runtimeConfig,
     // Transforms relative paths to real paths
-    packages: runtimeConfig.packages.map(pkg => {
+    packages: _runtimeConfig.packages.map(pkg => {
       if (pkg.strategy.type === 'build-before-copy') {
         makeDir(pkg.strategy.options?.build?.outDir ?? '');
       }
@@ -150,4 +180,17 @@ export async function getConfig() {
       return traverseObj(pkg) as typeof pkg;
     }),
   };
+
+  if (config.debug) {
+    console.log(
+      util.inspect(runtimeConfig, {
+        showHidden: false,
+        depth: null,
+        colors: true,
+      }),
+    );
+  }
+
+  cachedConfig = runtimeConfig;
+  return cachedConfig;
 }

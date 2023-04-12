@@ -19,7 +19,7 @@ export default async function linkFiles(
   logStep({ pkgId: pkg.id, n: 1, n_total: 3, message: `Linking files...` });
 
   if (pkg.strategy.type === 'direct-copy') {
-    await strategies.directCopy(pkg, silent, files, newChangeEvent);
+    await strategies.directCopy(pkg, files, newChangeEvent);
   }
 
   if (pkg.strategy.type === 'build-before-copy') {
@@ -34,9 +34,11 @@ export default async function linkFiles(
     message: `Bumping package.json...`,
   });
 
-  updatePackageJson(`${pkg.target.root}/package.json`, ({ version }) => ({
-    version: `${version.split('+')[0]}+${new Date().getTime()}`,
-  }));
+  pkg.target.root.resolved?.forEach((target: string) => {
+    updatePackageJson(`${target}/package.json`, ({ version }) => ({
+      version: `${version.split('+')[0]}+${new Date().getTime()}`,
+    }));
+  });
 
   logStep({
     pkgId: pkg.id,

@@ -1,7 +1,7 @@
 import { existsSync, realpathSync } from 'fs';
 
 export function checkPackageRequirements(pkg: LinkedPackage) {
-  [pkg.src.root, pkg.target.root].map(root => {
+  [pkg.src.root, ...(pkg.target.root.resolved ?? [])].map(root => {
     try {
       existsSync(realpathSync(`${root}/package.json`));
     } catch (error) {

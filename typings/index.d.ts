@@ -1,4 +1,4 @@
-import * as chokidar from 'chokidar';
+import * as chokidar from "chokidar";
 
 export type Command = {
   cmd: string;
@@ -8,13 +8,20 @@ export type Command = {
 /** All paths should be relative to root. Absolute paths not supported */
 export interface LinkedPackage {
   id: string;
+  /** A command used for installing during initialisation */
+  install: {
+    cmd: string;
+    args: string[];
+    cwd: string;
+  };
   strategy: {
-    type: 'direct-copy' | 'build-before-copy';
+    type: "direct-copy" | "build-before-copy";
     options?: {
       /** A command from package.json scripts used for building before copying */
       build?: {
         cmd: string;
         args: string[];
+        cwd: string;
         outDir: string;
       };
     };
@@ -33,7 +40,14 @@ export interface LinkedPackage {
   };
   target: {
     /** Must include a package.json file */
-    root: string;
+    root: {
+      path?: string;
+      glob?: {
+        workspaceFolder: string;
+        exp: string;
+      };
+      resolved?: string[];
+    };
     /** Allows overriding the destination of an updated file.
      * E.g. if file is updated in src/* but needs to be placed in dist/src on target. */
     modifyTargetPath?: (params: {
@@ -60,7 +74,7 @@ export interface Config {
   /** Increases the log level */
   debug?: boolean;
   /** Supported: 'yarn' */
-  npmClient: 'yarn';
+  npmClient: "yarn";
   /** Command to run after linking */
   devCommand: Command;
   /** Packages to watch */
@@ -70,4 +84,4 @@ export interface Config {
   tmpDir: string;
 }
 
-export type SPLConfig = Omit<Config, 'reinstallCommand' | 'tmpDir'>;
+export type SPLConfig = Omit<Config, "reinstallCommand" | "tmpDir">;

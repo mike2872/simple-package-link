@@ -3,6 +3,7 @@ import {
   copyFile,
   forEachFile,
   getConfig,
+  logSubStep,
 } from 'simple-package-link-utils';
 import determinePathTarget from '../determine-path-target';
 
@@ -20,6 +21,19 @@ export default async function buildBeforeCopy(pkg: LinkedPackage) {
   forEachFile(buildOptions.outDir, file => {
     const path_src = file.replace(buildOptions.outDir, pkg.src.root);
     const { path_target } = determinePathTarget(pkg, path_src);
-    copyFile(file, path_target);
+
+    if (config.debug) {
+      logSubStep({
+        message: `Relinking ${file} to: `,
+      });
+    }
+
+    path_target?.forEach(target => {
+      if (config.debug) {
+        logSubStep({ message: target });
+      }
+
+      //copyFile(file, target);
+    });
   });
 }
