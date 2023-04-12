@@ -132,7 +132,7 @@ importers:
         specifier: ^0.28.0
         version: 0.28.0
       simple-package-link-utils:
-        specifier: 1.4.0
+        specifier: 2.0.0
         version: link:../utils
       ts-node:
         specifier: ^10.9.1
