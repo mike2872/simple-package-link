@@ -1,5 +1,16 @@
 # simple-package-link
 
+## 5.1.0
+
+### Minor Changes
+
+- [`107d45b`](https://github.com/mike2872/simple-package-link/commit/107d45b7b224d77bf83a489c25e2f6230b5e14c6) Thanks [@mike2872](https://github.com/mike2872)! - Added node env tag to script
+
+### Patch Changes
+
+- Updated dependencies [[`107d45b`](https://github.com/mike2872/simple-package-link/commit/107d45b7b224d77bf83a489c25e2f6230b5e14c6)]:
+  - simple-package-link-utils@2.1.0
+
 ## 5.0.0
 
 ### Major Changes

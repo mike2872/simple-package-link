@@ -1,7 +1,7 @@
 {
   "name": "simple-package-link",
   "description": "",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "homepage": "",
   "private": false,
   "keywords": [],
@@ -47,7 +47,7 @@
     "concurrently": "^7.2.1",
     "lodash": "^4.17.21",
     "ramda": "^0.28.0",
-    "simple-package-link-utils": "2.0.0",
+    "simple-package-link-utils": "2.1.0",
     "ts-node": "^10.9.1",
     "tslib": "^2.4.0",
     "typescript": "^4.7.3",
