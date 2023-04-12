@@ -1,5 +1,11 @@
 # simple-package-link-utils
 
+## 2.0.0
+
+### Major Changes
+
+- [`98adcd8`](https://github.com/mike2872/simple-package-link/commit/98adcd8b70dbad115526b966350559eba2013b26) Thanks [@mike2872](https://github.com/mike2872)! - Added support for glob pattern in target + Implemented install and build on initialisation + Added logging to file
+
 ## 1.4.0
 
 ### Minor Changes
