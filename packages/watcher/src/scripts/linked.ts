@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import winston from 'winston';
 import { deleteFile, importConfig } from 'simple-package-link-utils';
 import { spawn } from 'child_process';
