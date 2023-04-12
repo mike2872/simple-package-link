@@ -39,12 +39,12 @@ export default async function directCopy(
       }
 
       if (eventType === 'add' || eventType === 'change') {
-        //deleteFile(path_target);
-        //copyFile(path_src, path_target);
+        deleteFile(path_target);
+        copyFile(path_src, path_target);
       }
 
       if (eventType === 'unlink') {
-        //deleteFile(path_target);
+        deleteFile(path_target);
       }
     });
 

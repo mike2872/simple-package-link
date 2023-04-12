@@ -33,7 +33,7 @@ export default async function buildBeforeCopy(pkg: LinkedPackage) {
         logSubStep({ message: target });
       }
 
-      //copyFile(file, target);
+      copyFile(file, target);
     });
   });
 }
