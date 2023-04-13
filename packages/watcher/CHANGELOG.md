@@ -1,5 +1,16 @@
 # simple-package-link
 
+## 5.3.0
+
+### Minor Changes
+
+- [`d24f0bc`](https://github.com/mike2872/simple-package-link/commit/d24f0bc6e1fe09877c33fc0c24fb36e857909a1d) Thanks [@mike2872](https://github.com/mike2872)! - Resolve glob async
+
+### Patch Changes
+
+- Updated dependencies [[`d24f0bc`](https://github.com/mike2872/simple-package-link/commit/d24f0bc6e1fe09877c33fc0c24fb36e857909a1d)]:
+  - simple-package-link-utils@2.3.0
+
 ## 5.2.0
 
 ### Minor Changes
