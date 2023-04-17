@@ -7,7 +7,6 @@ import {
   logStep,
   logSubStep,
   DevProcess,
-  listenKillSignal,
   trackChangeEvents,
   cleanup,
   trackDependencyChanges,
@@ -20,6 +19,8 @@ import {
 async function linked() {
   const { debug, packages } = await getConfig();
   const devProcess = new DevProcess();
+  await devProcess.start();
+  await devProcess.pause();
   const newChangeEvent = trackChangeEvents(devProcess);
   const syncDependencies = trackDependencyChanges(newChangeEvent);
 
@@ -148,8 +149,7 @@ async function linked() {
     message: 'Running dev command...',
   });
 
-  await devProcess.start();
-  listenKillSignal(devProcess);
+  await devProcess.resume();
 }
 
 linked();
