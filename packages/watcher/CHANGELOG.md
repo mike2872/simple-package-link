@@ -1,5 +1,16 @@
 # simple-package-link
 
+## 5.6.0
+
+### Minor Changes
+
+- [`a0017cb`](https://github.com/mike2872/simple-package-link/commit/a0017cb2a5c3e493c0a21ec5f4284e99c986d63a) Thanks [@mike2872](https://github.com/mike2872)! - Optional install command
+
+### Patch Changes
+
+- Updated dependencies [[`a0017cb`](https://github.com/mike2872/simple-package-link/commit/a0017cb2a5c3e493c0a21ec5f4284e99c986d63a)]:
+  - simple-package-link-utils@2.6.0
+
 ## 5.5.0
 
 ### Minor Changes
