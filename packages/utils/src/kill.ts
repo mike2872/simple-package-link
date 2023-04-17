@@ -1,23 +1,18 @@
-import { childProcessSync } from './child-process';
-import { getProcessTree } from './get-process-tree';
+import { ChildProcess } from 'child_process';
 import { logStep } from './log';
 
-export function kill(type: string, silent: boolean, pid?: string | number) {
-  if (!pid) return;
-  const processTree = getProcessTree(String(pid));
-
+export function kill(
+  type: 'SIGSTOP' | 'SIGCONT' | 'SIGKILL',
+  silent: boolean,
+  _process: ChildProcess,
+) {
   if (!silent) {
     logStep({
       message: `${
         type === 'SIGSTOP' ? 'Pausing' : type === 'SIGCONT' ? 'Resuming' : type
-      } process ${pid}...`,
+      } process ${process.pid}...`,
     });
   }
 
-  processTree.forEach(pid =>
-    childProcessSync('kill', {
-      args: [`-${type.toUpperCase()}`, pid],
-      type: 'return',
-    }),
-  );
+  _process.kill(type);
 }

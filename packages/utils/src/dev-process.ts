@@ -3,8 +3,10 @@ import { getCWD } from './get-cwd';
 import { childProcess } from './child-process';
 import { logStep } from './log';
 
+type Instance = Nullable<ReturnType<typeof childProcess>>;
+
 export class DevProcess {
-  private instance: Nullable<ReturnType<typeof childProcess>>;
+  private instance: Instance;
 
   constructor() {
     this.instance = null;
@@ -32,6 +34,7 @@ export class DevProcess {
   }
 
   public async start() {
+    logStep({ message: 'Spawning dev process...' });
     await this.spawn();
   }
 
@@ -49,7 +52,6 @@ export class DevProcess {
   }
 
   public async restart() {
-    logStep({ message: 'Restarting dev process...' });
     await this.terminate();
     await this.start();
   }

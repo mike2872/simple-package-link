@@ -1,20 +1,11 @@
-import { DevProcess } from './dev-process';
-import { logStep } from './log';
+const getProcess = () => process;
 
-export function listenKillSignal(devProcess: InstanceType<typeof DevProcess>) {
-  const terminateAllProcesses = async (err?: any) => {
-    if (err) {
-      console.error(err);
-    }
+export function listenKillSignal(onKilled: (signal: string) => void) {
+  const _process = getProcess();
 
-    logStep({ message: 'Terminating gracefully...' });
-    await devProcess.terminate();
-    process.exit(0);
-  };
-
-  ['SIGINT', 'SIGTERM'].forEach(signal =>
-    process.on(signal, () => terminateAllProcesses()),
+  ['disconnect', 'SIGINT', 'SIGTERM'].forEach(signal =>
+    _process.on(signal, () => {
+      onKilled(signal);
+    }),
   );
-
-  process.on('uncaughtException', err => terminateAllProcesses(err));
 }

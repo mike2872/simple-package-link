@@ -23,9 +23,9 @@ export function childProcess(
   }[type] as Partial<SpawnOptions>;
 
   const process = spawn(cmd, args ?? [], { cwd, ...opts });
-  const pause = (silent = false) => kill('SIGSTOP', silent, process.pid);
-  const resume = (silent = false) => kill('SIGCONT', silent, process.pid);
-  const terminate = (silent = false) => kill('SIGKILL', silent, process.pid);
+  const pause = (silent = false) => kill('SIGSTOP', silent, process);
+  const resume = (silent = false) => kill('SIGCONT', silent, process);
+  const terminate = (silent = false) => kill('SIGKILL', silent, process);
 
   return { process, pause, resume, terminate };
 }
