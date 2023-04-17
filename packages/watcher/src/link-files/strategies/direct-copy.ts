@@ -33,18 +33,22 @@ export default async function directCopy(
       });
     }
 
-    path_target?.forEach((path_target: string) => {
-      if (config.debug) {
-        logSubStep({ message: path_target });
-      }
-
+    path_target?.forEach((target: string) => {
       if (eventType === 'add' || eventType === 'change') {
-        deleteFile(path_target);
-        copyFile(path_src, path_target);
+        if (config.debug) {
+          logSubStep({ message: target });
+        }
+
+        deleteFile(target);
+        copyFile(path_src, target);
       }
 
       if (eventType === 'unlink') {
-        deleteFile(path_target);
+        if (config.debug) {
+          logSubStep({ message: target });
+        }
+
+        deleteFile(target);
       }
     });
 

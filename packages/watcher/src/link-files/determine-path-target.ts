@@ -17,7 +17,7 @@ export default function determinePathTarget(
         relativePath: file,
         src: path_src,
         targetRoot,
-      }) ?? `${pkg?.target.root}${file}`
+      }) ?? `${targetRoot}${file}`
     );
   });
 

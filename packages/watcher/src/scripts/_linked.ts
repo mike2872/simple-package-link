@@ -61,14 +61,20 @@ async function linked() {
             path_src,
           });
 
-        const stat = statSync(path);
+        try {
+          const stat = statSync(path);
 
-        if (stat.isFile()) {
-          initialCopyPush(path);
-        }
+          if (stat.isFile()) {
+            initialCopyPush(path);
+          }
 
-        if (stat.isDirectory()) {
-          forEachFile(path, initialCopyPush);
+          if (stat.isDirectory()) {
+            forEachFile(path, initialCopyPush);
+          }
+        } catch (e) {
+          if (debug) {
+            console.error(e);
+          }
         }
       });
 

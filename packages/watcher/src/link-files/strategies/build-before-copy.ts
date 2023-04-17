@@ -24,7 +24,7 @@ export default async function buildBeforeCopy(pkg: LinkedPackage) {
 
     if (config.debug) {
       logSubStep({
-        message: `Relinking ${file} to: `,
+        message: `**Relinking ${file} to:**`,
       });
     }
 
