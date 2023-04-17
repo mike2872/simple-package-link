@@ -1,5 +1,16 @@
 # simple-package-link
 
+## 5.4.0
+
+### Minor Changes
+
+- [`e0ad1c8`](https://github.com/mike2872/simple-package-link/commit/e0ad1c8a3dee85c7583a7bd9059c28b7b82405d7) Thanks [@mike2872](https://github.com/mike2872)! - Improved dev process state manager
+
+### Patch Changes
+
+- Updated dependencies [[`e0ad1c8`](https://github.com/mike2872/simple-package-link/commit/e0ad1c8a3dee85c7583a7bd9059c28b7b82405d7)]:
+  - simple-package-link-utils@2.4.0
+
 ## 5.3.0
 
 ### Minor Changes
