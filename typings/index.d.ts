@@ -9,7 +9,7 @@ export type Command = {
 export interface LinkedPackage {
   id: string;
   /** A command used for installing during initialisation */
-  install: {
+  install?: {
     cmd: string;
     args: string[];
     cwd: string;

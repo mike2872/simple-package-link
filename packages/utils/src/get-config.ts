@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import util from 'util';
 import { getCWD } from './get-cwd';
 import { mkdtempSync } from 'fs';
 import { importModuleWithRequire } from './import-module-with-require';
@@ -180,16 +179,6 @@ export async function getConfig() {
       return traverseObj(pkg) as typeof pkg;
     }),
   };
-
-  if (config.debug) {
-    console.log(
-      util.inspect(runtimeConfig, {
-        showHidden: false,
-        depth: null,
-        colors: true,
-      }),
-    );
-  }
 
   cachedConfig = runtimeConfig;
   return cachedConfig;

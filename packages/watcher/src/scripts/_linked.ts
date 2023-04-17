@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { statSync } from 'fs';
+import util from 'util';
 import createWatcher, { ChangedFileEvent } from '../create-watcher';
 import linkFiles from '../link-files';
 import {
@@ -17,20 +18,42 @@ import {
 } from 'simple-package-link-utils';
 
 async function linked() {
-  const { debug, packages } = await getConfig();
+  const config = await getConfig();
+  const { debug, packages } = config;
   const devProcess = new DevProcess();
   await devProcess.start();
   await devProcess.pause();
   const newChangeEvent = trackChangeEvents(devProcess);
   const syncDependencies = trackDependencyChanges(newChangeEvent);
 
+  if (debug) {
+    console.log(
+      util.inspect(config, {
+        showHidden: false,
+        depth: null,
+        colors: true,
+      }),
+    );
+  }
+
+  logStep({
+    n: 1,
+    n_total: 5,
+    message: 'Running cleanup...',
+  });
+
+  await cleanup(debug);
+
   const watchers = packages.reduce((acc, pkg) => {
     const install = async () => {
-      childProcessSync(pkg.install.cmd, {
-        args: pkg.install.args,
-        cwd: pkg.install.cwd,
-        type: debug ? 'inherit' : 'silent',
-      });
+      const install = pkg.install;
+      if (install) {
+        childProcessSync(install.cmd, {
+          args: install.args,
+          cwd: install.cwd,
+          type: debug ? 'inherit' : 'silent',
+        });
+      }
     };
 
     const build = async () => {
@@ -93,14 +116,6 @@ async function linked() {
   }, {} as Record<LinkedPackage['id'], Record<'install' | 'build' | 'initialCopy' | 'watchFiles', () => Promise<void>>>);
 
   logStep({
-    n: 1,
-    n_total: 5,
-    message: 'Running cleanup...',
-  });
-
-  await cleanup(debug);
-
-  logStep({
     n: 2,
     n_total: 5,
     message: 'Checking requirements is met...',
@@ -122,11 +137,13 @@ async function linked() {
       message: '',
     });
 
-    logSubStep({
-      message: `Running install command...`,
-    });
+    if (pkg.install) {
+      logSubStep({
+        message: `Running install command...`,
+      });
 
-    await watchers[pkg.id].install();
+      await watchers[pkg.id].install();
+    }
 
     if (pkg.strategy.type === 'build-before-copy') {
       logSubStep({
