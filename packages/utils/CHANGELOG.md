@@ -1,5 +1,11 @@
 # simple-package-link-utils
 
+## 2.5.0
+
+### Minor Changes
+
+- [`9203fea`](https://github.com/mike2872/simple-package-link/commit/9203feaf17cd45a9e67a50de7d751315ed0716fa) Thanks [@mike2872](https://github.com/mike2872)! - Added try catch for syncfiles
+
 ## 2.4.0
 
 ### Minor Changes
